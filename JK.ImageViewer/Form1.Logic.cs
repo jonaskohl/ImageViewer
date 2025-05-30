@@ -39,16 +39,22 @@ namespace JK.ImageViewer
             Cursor.Position = Cursor.Position;
             Application.DoEvents();
 
-            ClearImage();
+            try
+            {
+                using var magickImage = new MagickImage(path);
 
-            using var magickImage = new MagickImage(path);
-            imageViewControl1.ContentImage = magickImage.ToBitmap();
+                ClearImage();
+                imageViewControl1.ContentImage = magickImage.ToBitmap();
 
-            Text = Path.GetFileName(path) + " - " + baseTitle;
-            currentPath = path;
+                Text = Path.GetFileName(path) + " - " + baseTitle;
+                currentPath = path;
+            } catch (MagickDelegateErrorException ex) {
+                MessageBox.Show(ex.ToString(), "", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
 
             Application.DoEvents();
             Application.UseWaitCursor = false;
+            Cursor.Position = Cursor.Position;
         }
 
         private void ClearImage()
@@ -72,6 +78,12 @@ namespace JK.ImageViewer
             }
 
             return true;
+        }
+
+        private void SetZoomFactor(float zoomFactor)
+        {
+            imageViewControl1.ZoomFactor = zoomFactor;
+            toolStripNumericUpDown1.Value = (decimal)zoomFactor * 100m;
         }
     }
 }

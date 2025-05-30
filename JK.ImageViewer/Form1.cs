@@ -12,13 +12,32 @@ namespace JK.ImageViewer
         string[]? folderFiles = null;
         int folderIndex = -1;
 
-
         public Form1()
         {
             InitializeComponent();
             baseTitle = Text;
 
             imageViewControl1.ShowCheckerboard = true;
+
+            toolStripNumericUpDown1.NumericUpDown.ValueChanged += NumericUpDown_ValueChanged;
+
+            string filter =
+                $"All supported files|{string.Join(";", MagickNET.SupportedFormats
+                    .Where(format => format.SupportsReading)
+                    .Select(format => $"*.{format.Format.ToString().ToLower()}")
+                    .ToArray()
+                )}|" +
+                string.Join("|", MagickNET.SupportedFormats
+                    .Where(format => format.SupportsReading)
+                    .Select(format => $"{format.Format.ToString()} files|*.{format.Format.ToString().ToLower()}")
+                    .ToArray()
+                ) + "|All files|*.*";
+            openFileDialog1.Filter = filter;
+        }
+
+        private void NumericUpDown_ValueChanged(object? sender, EventArgs e)
+        {
+            SetZoomFactor((float)(toolStripNumericUpDown1.Value / 100m));
         }
 
         private void toolStripButton_openFile_Click(object sender, EventArgs e)
@@ -83,7 +102,12 @@ namespace JK.ImageViewer
 
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Command_CloseApplication();
+            Command_CloseImage();
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Command_ExitApplication();
         }
     }
 }

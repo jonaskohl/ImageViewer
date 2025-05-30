@@ -5,10 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel;
 using System.Drawing.Drawing2D;
+using ImageMagick;
 
-namespace JK.ImageViewer
+namespace JK.ImageViewer.Controls
 {
-    internal class ImageViewControl : Control
+    internal class ImageViewControl : ScrollableControl
     {
         private float _zoomFactor = 1.0f;
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -54,6 +55,13 @@ namespace JK.ImageViewer
             , true);
         }
 
+        protected override void OnScroll(ScrollEventArgs se)
+        {
+            base.OnScroll(se);
+            if (se.OldValue != se.NewValue)
+                Repaint();
+        }
+
         private void Repaint()
         {
             Invalidate();
@@ -66,10 +74,24 @@ namespace JK.ImageViewer
             if (_contentImage is null)
                 return;
 
+            var prevOffsetMode = e.Graphics.PixelOffsetMode;
+            e.Graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+            var innerWidth = ClientSize.Width;
+            var innerHeight = ClientSize.Height;
+
             var displayImageWidth = _contentImage.Width * _zoomFactor;
             var displayImageHeight = _contentImage.Height * _zoomFactor;
-            var posX = Math.Max(0, (Width - displayImageWidth) / 2f);
-            var posY = Math.Max(0, (Height - displayImageHeight) / 2f);
+            var hOverflow = displayImageWidth - innerWidth;
+            var vOverflow = displayImageHeight - innerHeight;
+
+            var posX = Math.Max(0, (innerWidth - displayImageWidth) / 2f) + AutoScrollPosition.X;
+            var posY = Math.Max(0, (innerHeight - displayImageHeight) / 2f) + AutoScrollPosition.Y;
+
+            AutoScrollMinSize = new Size(
+                (int)Math.Ceiling(displayImageWidth),
+                (int)Math.Ceiling(displayImageHeight)
+            );
 
             var displayRect = new RectangleF(posX, posY, displayImageWidth, displayImageHeight);
 
@@ -81,10 +103,12 @@ namespace JK.ImageViewer
                 e.Graphics.FillRectangle(checkerBrush, displayRect);
             }
 
-            var prev = e.Graphics.InterpolationMode;
+            var prevInterpolationMode = e.Graphics.InterpolationMode;
             e.Graphics.InterpolationMode = _zoomFactor < 1 ? InterpolationMode.HighQualityBicubic : InterpolationMode.NearestNeighbor;
             e.Graphics.DrawImage(_contentImage, displayRect);
-            e.Graphics.InterpolationMode = prev;
+            e.Graphics.InterpolationMode = prevInterpolationMode;
+
+            e.Graphics.PixelOffsetMode = prevOffsetMode;
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace JK.ImageViewer
+﻿using JK.ImageViewer.Controls;
+
+namespace JK.ImageViewer
 {
     partial class Form1
     {
@@ -34,6 +36,7 @@
             toolStripButton_zoomOut = new ToolStripButton();
             toolStripButton_zoomReset = new ToolStripButton();
             toolStripButton_ZoomIn = new ToolStripButton();
+            toolStripNumericUpDown1 = new ToolStripNumericUpDown();
             toolStripSeparator2 = new ToolStripSeparator();
             toolStripButton_FolderImgPrev = new ToolStripButton();
             toolStripButton_FolderImgNext = new ToolStripButton();
@@ -47,6 +50,7 @@
             nextImageToolStripMenuItem = new ToolStripMenuItem();
             toolStripSeparator4 = new ToolStripSeparator();
             closeToolStripMenuItem = new ToolStripMenuItem();
+            exitToolStripMenuItem = new ToolStripMenuItem();
             viewToolStripMenuItem = new ToolStripMenuItem();
             zoomToolStripMenuItem = new ToolStripMenuItem();
             zoominToolStripMenuItem = new ToolStripMenuItem();
@@ -59,10 +63,10 @@
             // toolStrip1
             // 
             toolStrip1.GripStyle = ToolStripGripStyle.Hidden;
-            toolStrip1.Items.AddRange(new ToolStripItem[] { toolStripButton_openFile, toolStripSeparator1, toolStripButton_zoomOut, toolStripButton_zoomReset, toolStripButton_ZoomIn, toolStripSeparator2, toolStripButton_FolderImgPrev, toolStripButton_FolderImgNext });
+            toolStrip1.Items.AddRange(new ToolStripItem[] { toolStripButton_openFile, toolStripSeparator1, toolStripButton_zoomOut, toolStripButton_zoomReset, toolStripButton_ZoomIn, toolStripNumericUpDown1, toolStripSeparator2, toolStripButton_FolderImgPrev, toolStripButton_FolderImgNext });
             toolStrip1.Location = new Point(0, 24);
             toolStrip1.Name = "toolStrip1";
-            toolStrip1.Size = new Size(800, 25);
+            toolStrip1.Size = new Size(800, 26);
             toolStrip1.TabIndex = 0;
             toolStrip1.Text = "toolStrip1";
             // 
@@ -71,21 +75,21 @@
             toolStripButton_openFile.DisplayStyle = ToolStripItemDisplayStyle.Image;
             toolStripButton_openFile.Image = Properties.Resources.folder_document;
             toolStripButton_openFile.Name = "toolStripButton_openFile";
-            toolStripButton_openFile.Size = new Size(23, 22);
+            toolStripButton_openFile.Size = new Size(23, 23);
             toolStripButton_openFile.Text = "Open file...";
             toolStripButton_openFile.Click += toolStripButton_openFile_Click;
             // 
             // toolStripSeparator1
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new Size(6, 25);
+            toolStripSeparator1.Size = new Size(6, 26);
             // 
             // toolStripButton_zoomOut
             // 
             toolStripButton_zoomOut.DisplayStyle = ToolStripItemDisplayStyle.Image;
             toolStripButton_zoomOut.Image = Properties.Resources.zoom_out;
             toolStripButton_zoomOut.Name = "toolStripButton_zoomOut";
-            toolStripButton_zoomOut.Size = new Size(23, 22);
+            toolStripButton_zoomOut.Size = new Size(23, 23);
             toolStripButton_zoomOut.Text = "Zoom out";
             toolStripButton_zoomOut.Click += toolStripButton_zoomOut_Click;
             // 
@@ -94,7 +98,7 @@
             toolStripButton_zoomReset.DisplayStyle = ToolStripItemDisplayStyle.Image;
             toolStripButton_zoomReset.Image = Properties.Resources.view_1_1;
             toolStripButton_zoomReset.Name = "toolStripButton_zoomReset";
-            toolStripButton_zoomReset.Size = new Size(23, 22);
+            toolStripButton_zoomReset.Size = new Size(23, 23);
             toolStripButton_zoomReset.Text = "Original size";
             toolStripButton_zoomReset.Click += toolStripButton_zoomReset_Click;
             // 
@@ -103,21 +107,32 @@
             toolStripButton_ZoomIn.DisplayStyle = ToolStripItemDisplayStyle.Image;
             toolStripButton_ZoomIn.Image = Properties.Resources.zoom_in;
             toolStripButton_ZoomIn.Name = "toolStripButton_ZoomIn";
-            toolStripButton_ZoomIn.Size = new Size(23, 22);
+            toolStripButton_ZoomIn.Size = new Size(23, 23);
             toolStripButton_ZoomIn.Text = "Zoom in";
             toolStripButton_ZoomIn.Click += toolStripButton_ZoomIn_Click;
+            // 
+            // toolStripNumericUpDown1
+            // 
+            toolStripNumericUpDown1.DecimalPlaces = 1;
+            toolStripNumericUpDown1.Increment = new decimal(new int[] { 1, 0, 0, 65536 });
+            toolStripNumericUpDown1.Maximum = new decimal(new int[] { 800, 0, 0, 0 });
+            toolStripNumericUpDown1.Minimum = new decimal(new int[] { 125, 0, 0, 65536 });
+            toolStripNumericUpDown1.Name = "toolStripNumericUpDown1";
+            toolStripNumericUpDown1.Size = new Size(50, 23);
+            toolStripNumericUpDown1.Text = "100,0";
+            toolStripNumericUpDown1.Value = new decimal(new int[] { 1000, 0, 0, 65536 });
             // 
             // toolStripSeparator2
             // 
             toolStripSeparator2.Name = "toolStripSeparator2";
-            toolStripSeparator2.Size = new Size(6, 25);
+            toolStripSeparator2.Size = new Size(6, 26);
             // 
             // toolStripButton_FolderImgPrev
             // 
             toolStripButton_FolderImgPrev.DisplayStyle = ToolStripItemDisplayStyle.Image;
             toolStripButton_FolderImgPrev.Image = Properties.Resources.nav_left;
             toolStripButton_FolderImgPrev.Name = "toolStripButton_FolderImgPrev";
-            toolStripButton_FolderImgPrev.Size = new Size(23, 22);
+            toolStripButton_FolderImgPrev.Size = new Size(23, 23);
             toolStripButton_FolderImgPrev.Text = "Previous image in folder";
             toolStripButton_FolderImgPrev.Click += toolStripButton_FolderImgPrev_Click;
             // 
@@ -126,20 +141,16 @@
             toolStripButton_FolderImgNext.DisplayStyle = ToolStripItemDisplayStyle.Image;
             toolStripButton_FolderImgNext.Image = Properties.Resources.nav_right;
             toolStripButton_FolderImgNext.Name = "toolStripButton_FolderImgNext";
-            toolStripButton_FolderImgNext.Size = new Size(23, 22);
+            toolStripButton_FolderImgNext.Size = new Size(23, 23);
             toolStripButton_FolderImgNext.Text = "Next image in folder";
             toolStripButton_FolderImgNext.Click += toolStripButton_FolderImgNext_Click;
-            // 
-            // openFileDialog1
-            // 
-            openFileDialog1.FileName = "openFileDialog1";
             // 
             // imageViewControl1
             // 
             imageViewControl1.Dock = DockStyle.Fill;
-            imageViewControl1.Location = new Point(0, 49);
+            imageViewControl1.Location = new Point(0, 50);
             imageViewControl1.Name = "imageViewControl1";
-            imageViewControl1.Size = new Size(800, 401);
+            imageViewControl1.Size = new Size(800, 400);
             imageViewControl1.TabIndex = 1;
             imageViewControl1.Text = "imageViewControl1";
             // 
@@ -154,7 +165,7 @@
             // 
             // fileToolStripMenuItem
             // 
-            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { openImageToolStripMenuItem, toolStripSeparator3, previousImageToolStripMenuItem, nextImageToolStripMenuItem, toolStripSeparator4, closeToolStripMenuItem });
+            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { openImageToolStripMenuItem, toolStripSeparator3, previousImageToolStripMenuItem, nextImageToolStripMenuItem, toolStripSeparator4, closeToolStripMenuItem, exitToolStripMenuItem });
             fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             fileToolStripMenuItem.Size = new Size(37, 20);
             fileToolStripMenuItem.Text = "&File";
@@ -201,6 +212,14 @@
             closeToolStripMenuItem.Size = new Size(193, 22);
             closeToolStripMenuItem.Text = "&Close";
             closeToolStripMenuItem.Click += closeToolStripMenuItem_Click;
+            // 
+            // exitToolStripMenuItem
+            // 
+            exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            exitToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.Q;
+            exitToolStripMenuItem.Size = new Size(193, 22);
+            exitToolStripMenuItem.Text = "&Exit";
+            exitToolStripMenuItem.Click += exitToolStripMenuItem_Click;
             // 
             // viewToolStripMenuItem
             // 
@@ -288,5 +307,7 @@
         private ToolStripMenuItem nextImageToolStripMenuItem;
         private ToolStripSeparator toolStripSeparator4;
         private ToolStripMenuItem closeToolStripMenuItem;
+        private ToolStripNumericUpDown toolStripNumericUpDown1;
+        private ToolStripMenuItem exitToolStripMenuItem;
     }
 }

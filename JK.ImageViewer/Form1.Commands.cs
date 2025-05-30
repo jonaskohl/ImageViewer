@@ -16,17 +16,17 @@ namespace JK.ImageViewer
 
         public void Command_ZoomIn()
         {
-            imageViewControl1.ZoomFactor = Math.Min(imageViewControl1.ZoomFactor + 0.125f, 8f);
+            SetZoomFactor(Math.Min(imageViewControl1.ZoomFactor + 0.125f, 8f));
         }
 
         public void Command_ZoomOriginal()
         {
-            imageViewControl1.ZoomFactor = 1f;
+            SetZoomFactor(1f);
         }
 
         public void Command_ZoomOut()
         {
-            imageViewControl1.ZoomFactor = Math.Max(imageViewControl1.ZoomFactor - 0.125f, 0.125f);
+            SetZoomFactor(Math.Max(imageViewControl1.ZoomFactor - 0.125f, 0.125f));
         }
 
         public void Command_FolderImagePrevious()
@@ -47,7 +47,12 @@ namespace JK.ImageViewer
             LoadImage(folderFiles[folderIndex]);
         }
 
-        public void Command_CloseApplication()
+        public void Command_CloseImage()
+        {
+            ClearImage();
+        }
+
+        public void Command_ExitApplication()
         {
             Close();
         }
