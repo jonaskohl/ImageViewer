@@ -31,15 +31,6 @@ namespace JK.ImageViewer
         private void InitializeComponent()
         {
             toolStrip1 = new ToolStrip();
-            toolStripButton_openFile = new ToolStripButton();
-            toolStripSeparator1 = new ToolStripSeparator();
-            toolStripButton_zoomOut = new ToolStripButton();
-            toolStripButton_zoomReset = new ToolStripButton();
-            toolStripButton_ZoomIn = new ToolStripButton();
-            toolStripNumericUpDown1 = new ToolStripNumericUpDown();
-            toolStripSeparator2 = new ToolStripSeparator();
-            toolStripButton_FolderImgPrev = new ToolStripButton();
-            toolStripButton_FolderImgNext = new ToolStripButton();
             openFileDialog1 = new OpenFileDialog();
             imageViewControl1 = new ImageViewControl();
             menuStrip1 = new MenuStrip();
@@ -56,101 +47,29 @@ namespace JK.ImageViewer
             zoominToolStripMenuItem = new ToolStripMenuItem();
             resetToolStripMenuItem = new ToolStripMenuItem();
             zoomoutToolStripMenuItem = new ToolStripMenuItem();
-            toolStrip1.SuspendLayout();
+            toolStripSeparator5 = new ToolStripSeparator();
+            fitToolStripMenuItem = new ToolStripMenuItem();
+            statusStrip1 = new StatusStrip();
+            toolStripStatusLabel_ImageResoultion = new ToolStripStatusLabel();
             menuStrip1.SuspendLayout();
+            statusStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // toolStrip1
             // 
             toolStrip1.GripStyle = ToolStripGripStyle.Hidden;
-            toolStrip1.Items.AddRange(new ToolStripItem[] { toolStripButton_openFile, toolStripSeparator1, toolStripButton_zoomOut, toolStripButton_zoomReset, toolStripButton_ZoomIn, toolStripNumericUpDown1, toolStripSeparator2, toolStripButton_FolderImgPrev, toolStripButton_FolderImgNext });
             toolStrip1.Location = new Point(0, 24);
             toolStrip1.Name = "toolStrip1";
-            toolStrip1.Size = new Size(800, 26);
+            toolStrip1.Size = new Size(800, 25);
             toolStrip1.TabIndex = 0;
             toolStrip1.Text = "toolStrip1";
-            // 
-            // toolStripButton_openFile
-            // 
-            toolStripButton_openFile.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            toolStripButton_openFile.Image = Properties.Resources.folder_document;
-            toolStripButton_openFile.Name = "toolStripButton_openFile";
-            toolStripButton_openFile.Size = new Size(23, 23);
-            toolStripButton_openFile.Text = "Open file...";
-            toolStripButton_openFile.Click += toolStripButton_openFile_Click;
-            // 
-            // toolStripSeparator1
-            // 
-            toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new Size(6, 26);
-            // 
-            // toolStripButton_zoomOut
-            // 
-            toolStripButton_zoomOut.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            toolStripButton_zoomOut.Image = Properties.Resources.zoom_out;
-            toolStripButton_zoomOut.Name = "toolStripButton_zoomOut";
-            toolStripButton_zoomOut.Size = new Size(23, 23);
-            toolStripButton_zoomOut.Text = "Zoom out";
-            toolStripButton_zoomOut.Click += toolStripButton_zoomOut_Click;
-            // 
-            // toolStripButton_zoomReset
-            // 
-            toolStripButton_zoomReset.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            toolStripButton_zoomReset.Image = Properties.Resources.view_1_1;
-            toolStripButton_zoomReset.Name = "toolStripButton_zoomReset";
-            toolStripButton_zoomReset.Size = new Size(23, 23);
-            toolStripButton_zoomReset.Text = "Original size";
-            toolStripButton_zoomReset.Click += toolStripButton_zoomReset_Click;
-            // 
-            // toolStripButton_ZoomIn
-            // 
-            toolStripButton_ZoomIn.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            toolStripButton_ZoomIn.Image = Properties.Resources.zoom_in;
-            toolStripButton_ZoomIn.Name = "toolStripButton_ZoomIn";
-            toolStripButton_ZoomIn.Size = new Size(23, 23);
-            toolStripButton_ZoomIn.Text = "Zoom in";
-            toolStripButton_ZoomIn.Click += toolStripButton_ZoomIn_Click;
-            // 
-            // toolStripNumericUpDown1
-            // 
-            toolStripNumericUpDown1.DecimalPlaces = 1;
-            toolStripNumericUpDown1.Increment = new decimal(new int[] { 1, 0, 0, 65536 });
-            toolStripNumericUpDown1.Maximum = new decimal(new int[] { 800, 0, 0, 0 });
-            toolStripNumericUpDown1.Minimum = new decimal(new int[] { 125, 0, 0, 65536 });
-            toolStripNumericUpDown1.Name = "toolStripNumericUpDown1";
-            toolStripNumericUpDown1.Size = new Size(50, 23);
-            toolStripNumericUpDown1.Text = "100,0";
-            toolStripNumericUpDown1.Value = new decimal(new int[] { 1000, 0, 0, 65536 });
-            // 
-            // toolStripSeparator2
-            // 
-            toolStripSeparator2.Name = "toolStripSeparator2";
-            toolStripSeparator2.Size = new Size(6, 26);
-            // 
-            // toolStripButton_FolderImgPrev
-            // 
-            toolStripButton_FolderImgPrev.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            toolStripButton_FolderImgPrev.Image = Properties.Resources.nav_left;
-            toolStripButton_FolderImgPrev.Name = "toolStripButton_FolderImgPrev";
-            toolStripButton_FolderImgPrev.Size = new Size(23, 23);
-            toolStripButton_FolderImgPrev.Text = "Previous image in folder";
-            toolStripButton_FolderImgPrev.Click += toolStripButton_FolderImgPrev_Click;
-            // 
-            // toolStripButton_FolderImgNext
-            // 
-            toolStripButton_FolderImgNext.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            toolStripButton_FolderImgNext.Image = Properties.Resources.nav_right;
-            toolStripButton_FolderImgNext.Name = "toolStripButton_FolderImgNext";
-            toolStripButton_FolderImgNext.Size = new Size(23, 23);
-            toolStripButton_FolderImgNext.Text = "Next image in folder";
-            toolStripButton_FolderImgNext.Click += toolStripButton_FolderImgNext_Click;
             // 
             // imageViewControl1
             // 
             imageViewControl1.Dock = DockStyle.Fill;
-            imageViewControl1.Location = new Point(0, 50);
+            imageViewControl1.Location = new Point(0, 49);
             imageViewControl1.Name = "imageViewControl1";
-            imageViewControl1.Size = new Size(800, 400);
+            imageViewControl1.Size = new Size(800, 379);
             imageViewControl1.TabIndex = 1;
             imageViewControl1.Text = "imageViewControl1";
             // 
@@ -230,7 +149,7 @@ namespace JK.ImageViewer
             // 
             // zoomToolStripMenuItem
             // 
-            zoomToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { zoominToolStripMenuItem, resetToolStripMenuItem, zoomoutToolStripMenuItem });
+            zoomToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { zoominToolStripMenuItem, resetToolStripMenuItem, zoomoutToolStripMenuItem, toolStripSeparator5, fitToolStripMenuItem });
             zoomToolStripMenuItem.Name = "zoomToolStripMenuItem";
             zoomToolStripMenuItem.Size = new Size(106, 22);
             zoomToolStripMenuItem.Text = "&Zoom";
@@ -262,21 +181,50 @@ namespace JK.ImageViewer
             zoomoutToolStripMenuItem.Text = "Zoom &out";
             zoomoutToolStripMenuItem.Click += zoomoutToolStripMenuItem_Click;
             // 
+            // toolStripSeparator5
+            // 
+            toolStripSeparator5.Name = "toolStripSeparator5";
+            toolStripSeparator5.Size = new Size(219, 6);
+            // 
+            // fitToolStripMenuItem
+            // 
+            fitToolStripMenuItem.Name = "fitToolStripMenuItem";
+            fitToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.D1;
+            fitToolStripMenuItem.Size = new Size(222, 22);
+            fitToolStripMenuItem.Text = "Fit";
+            fitToolStripMenuItem.Click += fitToolStripMenuItem_Click;
+            // 
+            // statusStrip1
+            // 
+            statusStrip1.Items.AddRange(new ToolStripItem[] { toolStripStatusLabel_ImageResoultion });
+            statusStrip1.Location = new Point(0, 428);
+            statusStrip1.Name = "statusStrip1";
+            statusStrip1.RenderMode = ToolStripRenderMode.ManagerRenderMode;
+            statusStrip1.Size = new Size(800, 22);
+            statusStrip1.TabIndex = 3;
+            statusStrip1.Text = "statusStrip1";
+            // 
+            // toolStripStatusLabel_ImageResoultion
+            // 
+            toolStripStatusLabel_ImageResoultion.Name = "toolStripStatusLabel_ImageResoultion";
+            toolStripStatusLabel_ImageResoultion.Size = new Size(0, 17);
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
             Controls.Add(imageViewControl1);
+            Controls.Add(statusStrip1);
             Controls.Add(toolStrip1);
             Controls.Add(menuStrip1);
             MainMenuStrip = menuStrip1;
             Name = "Form1";
             Text = "Image Viewer";
-            toolStrip1.ResumeLayout(false);
-            toolStrip1.PerformLayout();
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
+            statusStrip1.ResumeLayout(false);
+            statusStrip1.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -284,16 +232,8 @@ namespace JK.ImageViewer
         #endregion
 
         private ToolStrip toolStrip1;
-        private ToolStripButton toolStripButton_openFile;
         private OpenFileDialog openFileDialog1;
         private ImageViewControl imageViewControl1;
-        private ToolStripButton toolStripButton_zoomOut;
-        private ToolStripButton toolStripButton_zoomReset;
-        private ToolStripButton toolStripButton_ZoomIn;
-        private ToolStripSeparator toolStripSeparator1;
-        private ToolStripSeparator toolStripSeparator2;
-        private ToolStripButton toolStripButton_FolderImgPrev;
-        private ToolStripButton toolStripButton_FolderImgNext;
         private MenuStrip menuStrip1;
         private ToolStripMenuItem fileToolStripMenuItem;
         private ToolStripMenuItem openImageToolStripMenuItem;
@@ -307,7 +247,10 @@ namespace JK.ImageViewer
         private ToolStripMenuItem nextImageToolStripMenuItem;
         private ToolStripSeparator toolStripSeparator4;
         private ToolStripMenuItem closeToolStripMenuItem;
-        private ToolStripNumericUpDown toolStripNumericUpDown1;
         private ToolStripMenuItem exitToolStripMenuItem;
+        private StatusStrip statusStrip1;
+        private ToolStripStatusLabel toolStripStatusLabel_ImageResoultion;
+        private ToolStripSeparator toolStripSeparator5;
+        private ToolStripMenuItem fitToolStripMenuItem;
     }
 }

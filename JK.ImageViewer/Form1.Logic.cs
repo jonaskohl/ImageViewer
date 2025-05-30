@@ -39,30 +39,42 @@ namespace JK.ImageViewer
             Cursor.Position = Cursor.Position;
             Application.DoEvents();
 
+            ClearImage();
             try
             {
                 using var magickImage = new MagickImage(path);
 
-                ClearImage();
-                imageViewControl1.ContentImage = magickImage.ToBitmap();
+                toolStripStatusLabel_ImageResoultion.Text = $"{magickImage.BaseWidth}x{magickImage.BaseHeight}";
 
-                Text = Path.GetFileName(path) + " - " + baseTitle;
-                currentPath = path;
+                imageViewControl1.ContentImage = magickImage.ToBitmap();
             } catch (MagickDelegateErrorException ex) {
-                MessageBox.Show(ex.ToString(), "", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                imageViewControl1.ImageLoadException = ex;
+
+                //MessageBox.Show(ex.ToString(), "", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
+            Text = Path.GetFileName(path) + " - " + baseTitle;
+            currentPath = path;
 
             Application.DoEvents();
             Application.UseWaitCursor = false;
             Cursor.Position = Cursor.Position;
         }
 
-        private void ClearImage()
+        private void ClearImage(bool clearFolderPosition = false)
         {
+            imageViewControl1.ImageLoadException = null;
             imageViewControl1.ContentImage?.Dispose();
             imageViewControl1.ContentImage = null!;
             Text = baseTitle;
             currentPath = null;
+            toolStripStatusLabel_ImageResoultion.Text = string.Empty;
+
+            if (clearFolderPosition)
+            {
+                folderIndex = -1;
+                folderFiles = null;
+            }
         }
 
         private bool TryFetchFolder()
@@ -83,7 +95,18 @@ namespace JK.ImageViewer
         private void SetZoomFactor(float zoomFactor)
         {
             imageViewControl1.ZoomFactor = zoomFactor;
-            toolStripNumericUpDown1.Value = (decimal)zoomFactor * 100m;
+            //toolStripNumericUpDown1.Value = (decimal)zoomFactor * 100m;
+        }
+
+        private float GetBestFitZoomFactor()
+        {
+            if (imageViewControl1.ContentImage is null)
+                return 1f;
+
+            return Math.Min(
+                imageViewControl1.ClientSize.Width / (float)imageViewControl1.ContentImage.Width,
+                imageViewControl1.ClientSize.Height / (float)imageViewControl1.ContentImage.Height
+            );
         }
     }
 }

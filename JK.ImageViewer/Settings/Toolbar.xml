@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Toolbar>
+    <Command Command="OpenFile" />
+    <Separator />
+    <Command Command="ZoomOut" />
+    <Command Command="ZoomOriginal" />
+    <Command Command="ZoomIn" />
+    <ZoomInput />
+    <Separator />
+    <Command Command="FolderImagePrevious" />
+    <Command Command="FolderImageNext" />
+</Toolbar>

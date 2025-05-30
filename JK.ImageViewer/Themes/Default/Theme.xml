@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Theme Format="1">
+    <CommandIconMapping>
+        <Icon Command="OpenFile">
+            <IfColorScheme Which="Light,Dark">
+                <Image Source="images\folder_document.png" />
+            </IfColorScheme>
+        </Icon>
+        <Icon Command="ZoomIn">
+            <Image Source="images\zoom_in.png" />
+        </Icon>
+        <Icon Command="ZoomOut">
+            <Image Source="images\zoom_out.png" />
+        </Icon>
+        <Icon Command="ZoomOriginal">
+            <Image Source="images\view_1_1.png" />
+        </Icon>
+        <Icon Command="FolderImagePrevious">
+            <Image Source="images\nav_left.png" />
+        </Icon>
+        <Icon Command="FolderImageNext">
+            <Image Source="images\nav_right.png" />
+        </Icon>
+    </CommandIconMapping>
+    <SupportedColorSchemes>
+        <LightColorScheme />
+        <DarkColorScheme />
+    </SupportedColorSchemes>
+    <Colors>
+        <WindowBackground>
+            <IfColorScheme Which="Light,Dark">
+                <SystemColor>Window</SystemColor>
+            </IfColorScheme>
+        </WindowBackground>
+        <WindowForeground>
+            <IfColorScheme>
+                <SystemColor>WindowText</SystemColor>
+            </IfColorScheme>
+        </WindowForeground>
+    </Colors>
+</Theme>
