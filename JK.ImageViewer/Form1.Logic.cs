@@ -8,7 +8,8 @@ using System.Threading.Tasks;
 namespace JK.ImageViewer
 {
     public partial class Form1
-    {        private string? GetCurrentFolderPath()
+    {
+        private string? GetCurrentFolderPath()
         {
             if (currentPath is null)
                 return null;
@@ -47,7 +48,9 @@ namespace JK.ImageViewer
                 toolStripStatusLabel_ImageResoultion.Text = $"{magickImage.BaseWidth}x{magickImage.BaseHeight}";
 
                 imageViewControl1.ContentImage = magickImage.ToBitmap();
-            } catch (MagickDelegateErrorException ex) {
+            }
+            catch (MagickDelegateErrorException ex)
+            {
                 imageViewControl1.ImageLoadException = ex;
 
                 //MessageBox.Show(ex.ToString(), "", MessageBoxButtons.OK, MessageBoxIcon.Error);

@@ -1,5 +1,8 @@
 using ImageMagick;
 using JK.ImageViewer.Attributes;
+using JK.ImageViewer.Controls;
+using JK.ImageViewer.Keymap;
+using JK.ImageViewer.Theming;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
@@ -18,9 +21,10 @@ namespace JK.ImageViewer
         private record Command(string name, WindowCommandAttribute info, MethodInfo method);
 
         Dictionary<string, Command> availableWindowCommands;
+        ApplicationKeymap currentKeymap;
         Theme currentTheme;
 
-        public Form1()
+        public Form1(Theme initialTheme)
         {
             InitializeComponent();
             baseTitle = Text;
@@ -42,23 +46,102 @@ namespace JK.ImageViewer
                 ) + "|All files|*.*";
             openFileDialog1.Filter = filter;
 
-            currentTheme = LoadTheme("Default");
+            currentTheme = initialTheme;
             availableWindowCommands = GetAvailableCommands();
+            currentKeymap = ApplicationKeymap.LoadFromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Settings", "Keymap.xml"));
+            LoadAndBuildMenu();
             LoadAndBuildToolbar();
         }
 
-        private Theme LoadTheme(string themeName)
+        private void SelectTheme(string theme)
         {
-            return Theme.LoadFromFile(Path.Combine(
+            currentTheme = ThemeManager.LoadTheme(theme);
+            Application.SetColorMode(currentTheme.ThemeColorMode);
+            LoadAndBuildToolbar();
+            Invalidate();
+            Opacity = 0;
+            Application.DoEvents();
+            Opacity = 1;
+
+            if (MessageBox.Show("To properly apply the theme you need to restart the application!\r\n\r\nDo you want to restart the application now?", "", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
+                Application.Restart();
+        }
+
+        private void LoadAndBuildMenu()
+        {
+            menuStrip1.Items.Clear();
+            menuStrip1.SuspendLayout();
+
+            var doc = XDocument.Load(Path.Combine(
                 AppDomain.CurrentDomain.BaseDirectory,
-                "Themes",
-                themeName,
-                "Theme.xml"
+                "Settings",
+                "Menu.xml"
             ));
+
+            if (doc.Root is null || doc.Root.Name.ToString() != "MenuRoot")
+                throw new Exception("Malformed menu file: Incorrect root");
+
+            var commandId = 0;
+
+            void ProcessMenu(XElement menuElement, ToolStripItemCollection menuStripItems)
+            {
+                var name = menuElement.Name.ToString();
+                switch (name)
+                {
+                    case "Menu":
+                        {
+                            var parent = new ToolStripMenuItem(menuElement.Attribute("Label")!.Value);
+                            foreach (var el in menuElement.Elements())
+                                ProcessMenu(el, parent.DropDownItems);
+                            menuStripItems.Add(parent);
+                            break;
+                        }
+                    case "Command":
+                        {
+                            var commandName = menuElement.Attribute("Command")?.Value;
+                            if (commandName is null || !availableWindowCommands.ContainsKey(commandName))
+                                throw new Exception($"Malformed menu file: Incorrect attribute \"Command\"");
+
+                            var command = availableWindowCommands[commandName];
+                            var image = currentTheme.GetImageForCommand(commandName);
+                            var keymapEntry = currentKeymap.GetShortcutForCommand(commandName);
+                            var shortcut = keymapEntry?.ToKeys();
+                            var button = new ToolStripMenuItem()
+                            {
+                                Name = $"dynamicToolStripMenuItem__{commandId++}__{commandName}",
+                                Text = command.info.DisplayNameTranslationKey,
+                                Image = image,
+                                ShortcutKeys = shortcut ?? Keys.None,
+                            };
+                            button.Click += (sender, e) => command.method.Invoke(this, []);
+                            menuStripItems.Add(button);
+                        }
+                        break;
+                    case "Separator":
+                        menuStripItems.Add(new ToolStripSeparator());
+                        break;
+                    default:
+                        throw new Exception($"Malformed menu file: Incorrect leaf {name}");
+                }
+            }
+
+
+            foreach (var el in doc.Root.Elements())
+            {
+                if (el.Name != "Menu")
+                    throw new Exception("Malformed menu file: Incorrect root child");
+
+                ProcessMenu(el, menuStrip1.Items);
+            }
+
+            menuStrip1.ResumeLayout(true);
         }
 
         private void LoadAndBuildToolbar()
         {
+            toolStrip1.Items.Clear();
+            toolStrip1.SuspendLayout();
+
             var doc = XDocument.Load(Path.Combine(
                 AppDomain.CurrentDomain.BaseDirectory,
                 "Settings",
@@ -82,12 +165,13 @@ namespace JK.ImageViewer
                                 throw new Exception($"Malformed toolbar file: Incorrect attribute \"Command\"");
 
                             var command = availableWindowCommands[commandName];
+                            var image = currentTheme.GetImageForCommand(commandName);
                             var button = new ToolStripButton()
                             {
                                 Name = $"dynamicToolStripButton__{commandId++}__{commandName}",
                                 Text = command.info.DisplayNameTranslationKey,
-                                Image = currentTheme.GetImageForCommand(commandName),
-                                DisplayStyle = ToolStripItemDisplayStyle.Image,
+                                Image = image,
+                                DisplayStyle = image is null ? ToolStripItemDisplayStyle.Text : ToolStripItemDisplayStyle.Image,
                             };
                             button.Click += (sender, e) => command.method.Invoke(this, []);
                             toolStrip1.Items.Add(button);
@@ -97,11 +181,25 @@ namespace JK.ImageViewer
                         toolStrip1.Items.Add(new ToolStripSeparator());
                         break;
                     case "ZoomInput":
+                        {
+                            var item = new ToolStripNumericUpDown()
+                            {
+                                Minimum = 12.5m,
+                                Maximum = 800m,
+                                DecimalPlaces = 2,
+                                Value = (decimal)imageViewControl1.ZoomFactor * 100m,
+                            };
+                            item.NumericUpDown.ValueChanged += (sender, e) => SetZoomFactor((float)(item.Value / 100m));
+                            imageViewControl1.ZoomFactorChanged += (sender, e) => item.Value = (decimal)imageViewControl1.ZoomFactor * 100m;
+                            toolStrip1.Items.Add(item);
+                        }
                         break;
                     default:
                         throw new Exception($"Malformed toolbar file: Incorrect leaf {name}");
                 }
             }
+
+            toolStrip1.ResumeLayout(true);
         }
 
         private Dictionary<string, Command> GetAvailableCommands()
@@ -122,56 +220,6 @@ namespace JK.ImageViewer
                 .Where(c => c is not null)
                 .Select(c => new KeyValuePair<string, Command>(c!.name, c!))
                 .ToDictionary(c => c.Key, c => c.Value);
-        }
-
-        private void NumericUpDown_ValueChanged(object? sender, EventArgs e)
-        {
-            //SetZoomFactor((float)(toolStripNumericUpDown1.Value / 100m));
-        }
-
-        private void openImageToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Command_OpenFile();
-        }
-
-        private void zoominToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Command_ZoomIn();
-        }
-
-        private void resetToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Command_ZoomOriginal();
-        }
-
-        private void zoomoutToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Command_ZoomOut();
-        }
-
-        private void previousImageToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Command_FolderImagePrevious();
-        }
-
-        private void nextImageToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Command_FolderImageNext();
-        }
-
-        private void closeToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Command_CloseImage();
-        }
-
-        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Command_ExitApplication();
-        }
-
-        private void fitToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Command_ZoomToFit();
         }
     }
 }

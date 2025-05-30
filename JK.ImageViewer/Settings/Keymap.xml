@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Keymap>
+    <Shortcut Command="OpenFile">
+        <Ctrl />
+        <Key Which="O" />
+    </Shortcut>
+    <Shortcut Command="CloseImage">
+        <Ctrl />
+        <Key Which="W" />
+    </Shortcut>
+    <Shortcut Command="ExitApplication">
+        <Ctrl />
+        <Key Which="Q" />
+    </Shortcut>
+    <Shortcut Command="ZoomIn">
+        <Ctrl />
+        <Key Which="Oemplus" />
+    </Shortcut>
+    <Shortcut Command="ZoomOut">
+        <Ctrl />
+        <Key Which="OemMinus" />
+    </Shortcut>
+    <Shortcut Command="ZoomOriginal">
+        <Ctrl />
+        <Key Which="D0" />
+    </Shortcut>
+    <Shortcut Command="ZoomToFit">
+        <Ctrl />
+        <Key Which="D1" />
+    </Shortcut>
+</Keymap>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Theme
+    Format="1"
+    ColorMode="Classic"
+>
+    <CommandIconMapping>
+        <Icon Command="OpenFile">
+            <Image Source="images\folder_document.png" />
+        </Icon>
+        <Icon Command="ZoomIn">
+            <Image Source="images\zoom_in.png" />
+        </Icon>
+        <Icon Command="ZoomOut">
+            <Image Source="images\zoom_out.png" />
+        </Icon>
+        <Icon Command="ZoomOriginal">
+            <Image Source="images\view_1_1.png" />
+        </Icon>
+        <Icon Command="FolderImagePrevious">
+            <Image Source="images\nav_left_blue.png" />
+        </Icon>
+        <Icon Command="FolderImageNext">
+            <Image Source="images\nav_right_blue.png" />
+        </Icon>
+    </CommandIconMapping>
+    <Colors>
+        <WindowBackground>
+            <SystemColor>Control</SystemColor>
+        </WindowBackground>
+        <WindowForeground>
+            <SystemColor>ControlText</SystemColor>
+        </WindowForeground>
+    </Colors>
+</Theme>

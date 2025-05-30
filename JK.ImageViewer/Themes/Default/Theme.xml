@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Theme Format="1">
+<Theme
+    Format="1"
+    ColorMode="System"
+>
     <CommandIconMapping>
         <Icon Command="OpenFile">
             <IfColorScheme Which="Light,Dark">
@@ -21,11 +24,10 @@
         <Icon Command="FolderImageNext">
             <Image Source="images\nav_right.png" />
         </Icon>
+        <Icon Command="ExitApplication">
+            <Image Source="images\door_exit.png" />
+        </Icon>
     </CommandIconMapping>
-    <SupportedColorSchemes>
-        <LightColorScheme />
-        <DarkColorScheme />
-    </SupportedColorSchemes>
     <Colors>
         <WindowBackground>
             <IfColorScheme Which="Light,Dark">
@@ -33,7 +35,7 @@
             </IfColorScheme>
         </WindowBackground>
         <WindowForeground>
-            <IfColorScheme>
+            <IfColorScheme Which="Light,Dark">
                 <SystemColor>WindowText</SystemColor>
             </IfColorScheme>
         </WindowForeground>

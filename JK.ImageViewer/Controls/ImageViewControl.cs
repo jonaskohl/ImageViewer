@@ -11,6 +11,8 @@ namespace JK.ImageViewer.Controls
 {
     internal class ImageViewControl : ScrollableControl
     {
+        public event EventHandler ZoomFactorChanged;
+
         private float _zoomFactor = 1.0f;
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public float ZoomFactor
@@ -19,6 +21,7 @@ namespace JK.ImageViewer.Controls
             set
             {
                 _zoomFactor = value;
+                ZoomFactorChanged?.Invoke(this, EventArgs.Empty);
                 Repaint();
             }
         }
