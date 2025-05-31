@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Theme
+    Format="1"
+    ColorMode="System"
+>
+    <Icons>
+        <Icon Key="Command.OpenFile">
+            <IfColorScheme Which="Light">
+                <Image Source="images\light\folder_open.png" />
+            </IfColorScheme>
+            <IfColorScheme Which="Dark">
+                <Image Source="images\dark\folder_open.png" />
+            </IfColorScheme>
+        </Icon>
+        <Icon Key="Command.ZoomIn">
+            <IfColorScheme Which="Light">
+                <Image Source="images\light\zoom_in.png" />
+            </IfColorScheme>
+            <IfColorScheme Which="Dark">
+                <Image Source="images\dark\zoom_in.png" />
+            </IfColorScheme>
+        </Icon>
+        <Icon Key="Command.ZoomOut">
+            <IfColorScheme Which="Light">
+                <Image Source="images\light\zoom_out.png" />
+            </IfColorScheme>
+            <IfColorScheme Which="Dark">
+                <Image Source="images\dark\zoom_out.png" />
+            </IfColorScheme>
+        </Icon>
+        <Icon Key="Command.ZoomOriginal">
+            <IfColorScheme Which="Light">
+                <Image Source="images\light\view_1_1.png" />
+            </IfColorScheme>
+            <IfColorScheme Which="Dark">
+                <Image Source="images\dark\view_1_1.png" />
+            </IfColorScheme>
+        </Icon>
+        <Icon Key="Command.FolderImagePrevious">
+            <IfColorScheme Which="Light">
+                <Image Source="images\light\nav_left.png" />
+            </IfColorScheme>
+            <IfColorScheme Which="Dark">
+                <Image Source="images\dark\nav_left.png" />
+            </IfColorScheme>
+        </Icon>
+        <Icon Key="Command.FolderImageNext">
+            <IfColorScheme Which="Light">
+                <Image Source="images\light\nav_right.png" />
+            </IfColorScheme>
+            <IfColorScheme Which="Dark">
+                <Image Source="images\dark\nav_right.png" />
+            </IfColorScheme>
+        </Icon>
+        <Icon Key="Command.ExitApplication">
+            <IfColorScheme Which="Light">
+                <Image Source="images\light\door_exit.png" />
+            </IfColorScheme>
+            <IfColorScheme Which="Dark">
+                <Image Source="images\dark\door_exit.png" />
+            </IfColorScheme>
+        </Icon>
+        <Icon Key="Command.ShowSettings">
+            <IfColorScheme Which="Light">
+                <Image Source="images\light\gearwheel.png" />
+            </IfColorScheme>
+            <IfColorScheme Which="Dark">
+                <Image Source="images\dark\gearwheel.png" />
+            </IfColorScheme>
+        </Icon>
+    </Icons>
+    <Colors>
+        <WindowBackground>
+            <IfColorScheme Which="Light,Dark">
+                <SystemColor>Window</SystemColor>
+            </IfColorScheme>
+        </WindowBackground>
+        <WindowForeground>
+            <IfColorScheme Which="Light,Dark">
+                <SystemColor>WindowText</SystemColor>
+            </IfColorScheme>
+        </WindowForeground>
+    </Colors>
+</Theme>
