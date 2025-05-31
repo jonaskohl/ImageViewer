@@ -32,8 +32,29 @@ namespace JK.ImageViewer
 
             foreach (var category in doc.Root!.Elements("Category"))
             {
-                listBox1.Items.Add(category.Attribute("Which")!.Value);
+                fancyTreeView1.Nodes.Add(category.Attribute("Which")!.Value);
             }
+            fancyTreeView1.SelectedNode = fancyTreeView1.Nodes.Cast<TreeNode>().FirstOrDefault();
+        }
+
+        private void okButton_Click(object sender, EventArgs e)
+        {
+            ApplySettings();
+        }
+
+        private void ApplySettings()
+        {
+            applyButton.Enabled = false;
+        }
+
+        private void cancelButton_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void applyButton_Click(object sender, EventArgs e)
+        {
+            ApplySettings();
         }
     }
 }

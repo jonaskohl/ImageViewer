@@ -7,6 +7,7 @@
         <UseWindowsForms>true</UseWindowsForms>
         <ImplicitUsings>enable</ImplicitUsings>
         <NoWarn>$(NoWarn);WFO5001;WFO5002</NoWarn>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
     <ItemGroup>
@@ -15,6 +16,9 @@
     </ItemGroup>
 
     <ItemGroup>
+        <Compile Update="Controls\FancyTreeView.cs">
+          <SubType>Component</SubType>
+        </Compile>
         <Compile Update="Properties\Resources.Designer.cs">
             <DesignTime>True</DesignTime>
             <AutoGen>True</AutoGen>

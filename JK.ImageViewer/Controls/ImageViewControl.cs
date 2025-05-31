@@ -73,7 +73,10 @@ namespace JK.ImageViewer.Controls
         protected override void OnMouseWheel(MouseEventArgs e)
         {
             if (ModifierKeys == Keys.Control)
-                ZoomFactor = MathUtil.Clamp(0.125f, ZoomFactor + (e.Delta / 720f), 8f);
+            {
+                var add = (e.Delta / 1440f) * ZoomFactor;
+                ZoomFactor = MathUtil.Clamp(Constants.ZOOM_FACTOR_MIN, ZoomFactor + add, Constants.ZOOM_FACTOR_MAX);
+            }
             else
                 base.OnMouseWheel(e);
         }

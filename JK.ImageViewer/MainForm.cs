@@ -206,11 +206,14 @@ namespace JK.ImageViewer
                         {
                             var item = new ToolStripNumericUpDown()
                             {
-                                Minimum = 12.5m,
-                                Maximum = 800m,
+                                AutoSize = false,
+                                Width = 80,
+                                Minimum = (decimal)Constants.ZOOM_FACTOR_MIN * 100m,
+                                Maximum = (decimal)Constants.ZOOM_FACTOR_MAX * 100m,
                                 DecimalPlaces = 2,
                                 Value = (decimal)imageViewControl1.ZoomFactor * 100m,
                             };
+                            item.NumericUpDown.Suffix = " %";
                             item.NumericUpDown.ValueChanged += (sender, e) => SetZoomFactor((float)(item.Value / 100m));
                             imageViewControl1.ZoomFactorChanged += (sender, e) => item.Value = (decimal)imageViewControl1.ZoomFactor * 100m;
                             toolStrip1.Items.Add(item);

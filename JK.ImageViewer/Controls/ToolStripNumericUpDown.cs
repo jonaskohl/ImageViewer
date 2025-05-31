@@ -37,11 +37,11 @@ namespace JK.ImageViewer.Controls
 
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public NumericUpDown NumericUpDown
+        public SuffixableNumericUpDown NumericUpDown
         {
             get
             {
-                return (NumericUpDown)Control;
+                return (SuffixableNumericUpDown)Control;
             }
         }
 

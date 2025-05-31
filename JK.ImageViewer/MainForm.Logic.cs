@@ -95,7 +95,7 @@ namespace JK.ImageViewer
 
         private void SetZoomFactor(float zoomFactor)
         {
-            zoomFactor = MathUtil.Clamp(0.125f, zoomFactor, 8f);
+            zoomFactor = MathUtil.Clamp(Constants.ZOOM_FACTOR_MIN,  zoomFactor, Constants.ZOOM_FACTOR_MAX);
 
             imageViewControl1.ZoomFactor = zoomFactor;
         }

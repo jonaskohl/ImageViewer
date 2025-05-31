@@ -9,7 +9,7 @@ namespace JK.ImageViewer.Controls
 {
     public partial class ToolStripNumericUpDown
     {
-        internal class ToolStripNumericUpDownControl : NumericUpDown
+        internal class ToolStripNumericUpDownControl : SuffixableNumericUpDown
         {
             private ToolStripNumericUpDown? _ownerItem;
 
