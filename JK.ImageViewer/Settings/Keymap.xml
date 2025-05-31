@@ -28,4 +28,14 @@
         <Ctrl />
         <Key Which="D1" />
     </Shortcut>
+    <Shortcut Command="FolderImagePrevious">
+        <Key Which="Left" />
+    </Shortcut>
+    <Shortcut Command="FolderImageNext">
+        <Key Which="Right" />
+    </Shortcut>
+    <Shortcut Command="ShowSettings">
+        <Ctrl />
+        <Key Which="Oemcomma" />
+    </Shortcut>
 </Keymap>

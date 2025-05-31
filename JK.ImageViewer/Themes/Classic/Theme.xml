@@ -3,26 +3,26 @@
     Format="1"
     ColorMode="Classic"
 >
-    <CommandIconMapping>
-        <Icon Command="OpenFile">
+    <Icons>
+        <Icon Key="Command.OpenFile">
             <Image Source="images\folder_document.png" />
         </Icon>
-        <Icon Command="ZoomIn">
+        <Icon Key="Command.ZoomIn">
             <Image Source="images\zoom_in.png" />
         </Icon>
-        <Icon Command="ZoomOut">
+        <Icon Key="Command.ZoomOut">
             <Image Source="images\zoom_out.png" />
         </Icon>
-        <Icon Command="ZoomOriginal">
+        <Icon Key="Command.ZoomOriginal">
             <Image Source="images\view_1_1.png" />
         </Icon>
-        <Icon Command="FolderImagePrevious">
+        <Icon Key="Command.FolderImagePrevious">
             <Image Source="images\nav_left_blue.png" />
         </Icon>
-        <Icon Command="FolderImageNext">
+        <Icon Key="Command.FolderImageNext">
             <Image Source="images\nav_right_blue.png" />
         </Icon>
-    </CommandIconMapping>
+    </Icons>
     <Colors>
         <WindowBackground>
             <SystemColor>Control</SystemColor>

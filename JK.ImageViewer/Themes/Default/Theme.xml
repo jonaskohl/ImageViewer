@@ -3,31 +3,34 @@
     Format="1"
     ColorMode="System"
 >
-    <CommandIconMapping>
-        <Icon Command="OpenFile">
+    <Icons>
+        <Icon Key="Command.OpenFile">
             <IfColorScheme Which="Light,Dark">
                 <Image Source="images\folder_document.png" />
             </IfColorScheme>
         </Icon>
-        <Icon Command="ZoomIn">
+        <Icon Key="Command.ZoomIn">
             <Image Source="images\zoom_in.png" />
         </Icon>
-        <Icon Command="ZoomOut">
+        <Icon Key="Command.ZoomOut">
             <Image Source="images\zoom_out.png" />
         </Icon>
-        <Icon Command="ZoomOriginal">
+        <Icon Key="Command.ZoomOriginal">
             <Image Source="images\view_1_1.png" />
         </Icon>
-        <Icon Command="FolderImagePrevious">
+        <Icon Key="Command.FolderImagePrevious">
             <Image Source="images\nav_left.png" />
         </Icon>
-        <Icon Command="FolderImageNext">
+        <Icon Key="Command.FolderImageNext">
             <Image Source="images\nav_right.png" />
         </Icon>
-        <Icon Command="ExitApplication">
+        <Icon Key="Command.ExitApplication">
             <Image Source="images\door_exit.png" />
         </Icon>
-    </CommandIconMapping>
+        <Icon Key="Command.ShowSettings">
+            <Image Source="images\gearwheel.png" />
+        </Icon>
+    </Icons>
     <Colors>
         <WindowBackground>
             <IfColorScheme Which="Light,Dark">

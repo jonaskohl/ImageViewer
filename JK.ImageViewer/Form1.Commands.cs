@@ -19,7 +19,7 @@ namespace JK.ImageViewer
         [WindowCommand("Zoom in")]
         public void Command_ZoomIn()
         {
-            SetZoomFactor(Math.Min(imageViewControl1.ZoomFactor + 0.125f, 8f));
+            SetZoomFactor(imageViewControl1.ZoomFactor + 0.125f);
         }
 
         [WindowCommand("Reset zoom")]
@@ -31,7 +31,7 @@ namespace JK.ImageViewer
         [WindowCommand("Zoom out")]
         public void Command_ZoomOut()
         {
-            SetZoomFactor(Math.Max(imageViewControl1.ZoomFactor - 0.125f, 0.125f));
+            SetZoomFactor(imageViewControl1.ZoomFactor - 0.125f);
         }
 
         [WindowCommand("Previous image in folder")]
@@ -70,6 +70,13 @@ namespace JK.ImageViewer
         public void Command_ZoomToFit()
         {
             SetZoomFactor(GetBestFitZoomFactor());
+        }
+
+        [WindowCommand("Settings...")]
+        public void Command_ShowSettings()
+        {
+            using var diag = new SettingsForm();
+            diag.ShowDialog(this);
         }
     }
 }

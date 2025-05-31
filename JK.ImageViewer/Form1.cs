@@ -18,7 +18,7 @@ namespace JK.ImageViewer
         string[]? folderFiles = null;
         int folderIndex = -1;
 
-        private record Command(string name, WindowCommandAttribute info, MethodInfo method);
+        private record Command(string Name, WindowCommandAttribute Info, MethodInfo Method);
 
         Dictionary<string, Command> availableWindowCommands;
         ApplicationKeymap currentKeymap;
@@ -51,6 +51,21 @@ namespace JK.ImageViewer
             currentKeymap = ApplicationKeymap.LoadFromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Settings", "Keymap.xml"));
             LoadAndBuildMenu();
             LoadAndBuildToolbar();
+        }
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            foreach (var shortcut in currentKeymap.AllShortcuts)
+            {
+                if (keyData == shortcut.Value.ToKeys())
+                {
+                    if (availableWindowCommands.TryGetValue(shortcut.Key, out Command? command))
+                        command?.Method?.Invoke(this, []);
+                    return true;
+                }
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
         }
 
         private void SelectTheme(string theme)
@@ -103,17 +118,16 @@ namespace JK.ImageViewer
                                 throw new Exception($"Malformed menu file: Incorrect attribute \"Command\"");
 
                             var command = availableWindowCommands[commandName];
-                            var image = currentTheme.GetImageForCommand(commandName);
-                            var keymapEntry = currentKeymap.GetShortcutForCommand(commandName);
-                            var shortcut = keymapEntry?.ToKeys();
+                            var image = currentTheme.GetImage($"Command.{commandName}");
+                            var shortcut = currentKeymap.GetShortcutForCommand(commandName);
                             var button = new ToolStripMenuItem()
                             {
                                 Name = $"dynamicToolStripMenuItem__{commandId++}__{commandName}",
-                                Text = command.info.DisplayNameTranslationKey,
+                                Text = command.Info.DisplayNameTranslationKey,
                                 Image = image,
-                                ShortcutKeys = shortcut ?? Keys.None,
+                                ShortcutKeyDisplayString = shortcut?.ToString(),
                             };
-                            button.Click += (sender, e) => command.method.Invoke(this, []);
+                            button.Click += (sender, e) => command.Method.Invoke(this, []);
                             menuStripItems.Add(button);
                         }
                         break;
@@ -165,15 +179,15 @@ namespace JK.ImageViewer
                                 throw new Exception($"Malformed toolbar file: Incorrect attribute \"Command\"");
 
                             var command = availableWindowCommands[commandName];
-                            var image = currentTheme.GetImageForCommand(commandName);
+                            var image = currentTheme.GetImage($"Command.{commandName}");
                             var button = new ToolStripButton()
                             {
                                 Name = $"dynamicToolStripButton__{commandId++}__{commandName}",
-                                Text = command.info.DisplayNameTranslationKey,
+                                Text = command.Info.DisplayNameTranslationKey,
                                 Image = image,
                                 DisplayStyle = image is null ? ToolStripItemDisplayStyle.Text : ToolStripItemDisplayStyle.Image,
                             };
-                            button.Click += (sender, e) => command.method.Invoke(this, []);
+                            button.Click += (sender, e) => command.Method.Invoke(this, []);
                             toolStrip1.Items.Add(button);
                         }
                         break;
@@ -218,8 +232,13 @@ namespace JK.ImageViewer
                     return new Command(name, info, mi);
                 })
                 .Where(c => c is not null)
-                .Select(c => new KeyValuePair<string, Command>(c!.name, c!))
+                .Select(c => new KeyValuePair<string, Command>(c!.Name, c!))
                 .ToDictionary(c => c.Key, c => c.Value);
+        }
+
+        private void imageViewControl1_ZoomFactorChanged(object sender, EventArgs e)
+        {
+            UpdateZoomText();
         }
     }
 }

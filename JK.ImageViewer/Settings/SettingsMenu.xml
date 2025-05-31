@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<SettingsMenu>
+    <Category Which="Appearance">
+        <Setting Key="ApplicationTheme" />
+    </Category>
+</SettingsMenu>

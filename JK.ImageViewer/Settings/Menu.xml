@@ -6,6 +6,8 @@
         <Command Command="FolderImagePrevious" />
         <Command Command="FolderImageNext" />
         <Separator />
+        <Command Command="ShowSettings" />
+        <Separator />
         <Command Command="CloseImage" />
         <Command Command="ExitApplication" />
     </Menu>

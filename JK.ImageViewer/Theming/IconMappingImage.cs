@@ -1,6 +1,6 @@
 ﻿namespace JK.ImageViewer.Theming
 {
-    public record CommandIconMappingImage(
+    public record IconMappingImage(
         string Source,
         ThemePropertyCondition Condition
     );

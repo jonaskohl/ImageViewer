@@ -11,7 +11,7 @@ namespace JK.ImageViewer.Controls
 {
     internal class ImageViewControl : ScrollableControl
     {
-        public event EventHandler ZoomFactorChanged;
+        public event EventHandler? ZoomFactorChanged;
 
         private float _zoomFactor = 1.0f;
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -70,6 +70,14 @@ namespace JK.ImageViewer.Controls
             , true);
         }
 
+        protected override void OnMouseWheel(MouseEventArgs e)
+        {
+            if (ModifierKeys == Keys.Control)
+                ZoomFactor = MathUtil.Clamp(0.125f, ZoomFactor + (e.Delta / 720f), 8f);
+            else
+                base.OnMouseWheel(e);
+        }
+
         protected override void OnScroll(ScrollEventArgs se)
         {
             base.OnScroll(se);
@@ -102,7 +110,10 @@ namespace JK.ImageViewer.Controls
             }
 
             if (_contentImage is null)
+            {
+                AutoScrollMinSize = Size.Empty;
                 return;
+            }
 
             var prevOffsetMode = e.Graphics.PixelOffsetMode;
             e.Graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;

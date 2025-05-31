@@ -11,7 +11,7 @@ namespace JK.ImageViewer.Theming
 {
     public class Theme
     {
-        public required CommandIconMapping CommandIconMapping;
+        public required IconMapping IconMapping;
         public required SystemColorMode ThemeColorMode;
 
         protected string? ThemeDirPath;
@@ -24,28 +24,28 @@ namespace JK.ImageViewer.Theming
 
             // TODO Assert root tag name and format version
 
-            CommandIconMapping commandIconMapping = new();
+            IconMapping iconMapping = new();
             var themeColorMode = SystemColorMode.System;
 
             var rootColorSchemeAttribute = doc.Root?.Attribute("ColorMode")?.Value;
             if (rootColorSchemeAttribute is not null)
                 themeColorMode = Enum.Parse<SystemColorMode>(rootColorSchemeAttribute);
 
-            var xIconMapping = doc.Root?.Element("CommandIconMapping");
+            var xIconMapping = doc.Root?.Element("Icons");
             if (xIconMapping is not null)
             {
                 foreach (var xMappingEntry in xIconMapping.Elements("Icon"))
                 {
-                    var commandAttrib = xMappingEntry.Attribute("Command")?.Value;
-                    if (commandAttrib is null)
-                        throw new Exception("Command attribute missing");
+                    var keyAttrib = xMappingEntry.Attribute("Key")?.Value;
+                    if (keyAttrib is null)
+                        throw new Exception("Key attribute missing");
 
                     var directImageChild = xMappingEntry.Element("Image");
                     var conditionalChildren = xMappingEntry.Elements().Where(x =>
                         x.Name == "IfColorScheme"
                     ).ToArray();
 
-                    List<CommandIconMappingImage> images = new();
+                    List<IconMappingImage> images = new();
                     if (conditionalChildren.Length > 0 && directImageChild is not null)
                         throw new Exception("Invalid combination of child elements");
                     else if (directImageChild is not null)
@@ -74,8 +74,8 @@ namespace JK.ImageViewer.Theming
                         }
                     }
 
-                    commandIconMapping.Add(commandAttrib, new(
-                        commandAttrib,
+                    iconMapping.Add(keyAttrib, new(
+                        keyAttrib,
                         images.ToArray()
                     ));
                 }
@@ -84,31 +84,31 @@ namespace JK.ImageViewer.Theming
 
             return new Theme()
             {
-                CommandIconMapping = commandIconMapping,
+                IconMapping = iconMapping,
                 ThemeColorMode = themeColorMode,
 
                 ThemeDirPath = themeDirPath,
             };
         }
 
-        public Image? GetImageForCommand(string commandName)
+        public Image? GetImage(string key)
         {
-            if (!CommandIconMapping.ContainsKey(commandName))
+            if (!IconMapping.ContainsKey(key))
             {
-                Debug.WriteLine($"GetImageForCommand(\"{commandName}\") -> No mapping for command");
+                Debug.WriteLine($"GetImageForCommand(\"{key}\") -> No mapping for key");
                 return null;
             }
             if (ThemeDirPath is null)
             {
-                Debug.WriteLine($"GetImageForCommand(\"{commandName}\") -> No reference path");
+                Debug.WriteLine($"GetImageForCommand(\"{key}\") -> No reference path");
                 return null;
             }
 
-            var mappingEntry = CommandIconMapping[commandName];
+            var mappingEntry = IconMapping[key];
             var source = mappingEntry.Images.Where(i => i.Condition.Evaluate()).FirstOrDefault()?.Source;
             if (source is null)
             {
-                Debug.WriteLine($"GetImageForCommand(\"{commandName}\") -> No matching image");
+                Debug.WriteLine($"GetImageForCommand(\"{key}\") -> No matching image");
                 return null;
             }
 
@@ -116,7 +116,7 @@ namespace JK.ImageViewer.Theming
 
             if (!File.Exists(fullSource))
             {
-                Debug.WriteLine($"GetImageForCommand(\"{commandName}\") -> Path {fullSource} does not exist");
+                Debug.WriteLine($"GetImageForCommand(\"{key}\") -> Path {fullSource} does not exist");
                 return null;
             }
 
@@ -127,7 +127,7 @@ namespace JK.ImageViewer.Theming
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"GetImageForCommand(\"{commandName}\") -> Exception:");
+                Debug.WriteLine($"GetImageForCommand(\"{key}\") -> Exception:");
                 Debug.WriteLine(ex);
                 return null;
             }

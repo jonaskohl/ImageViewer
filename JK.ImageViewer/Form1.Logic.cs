@@ -45,15 +45,13 @@ namespace JK.ImageViewer
             {
                 using var magickImage = new MagickImage(path);
 
-                toolStripStatusLabel_ImageResoultion.Text = $"{magickImage.BaseWidth}x{magickImage.BaseHeight}";
-
                 imageViewControl1.ContentImage = magickImage.ToBitmap();
+
+                UpdateZoomText();
             }
             catch (MagickDelegateErrorException ex)
             {
                 imageViewControl1.ImageLoadException = ex;
-
-                //MessageBox.Show(ex.ToString(), "", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             Text = Path.GetFileName(path) + " - " + baseTitle;
@@ -71,7 +69,7 @@ namespace JK.ImageViewer
             imageViewControl1.ContentImage = null!;
             Text = baseTitle;
             currentPath = null;
-            toolStripStatusLabel_ImageResoultion.Text = string.Empty;
+            UpdateZoomText();
 
             if (clearFolderPosition)
             {
@@ -97,8 +95,9 @@ namespace JK.ImageViewer
 
         private void SetZoomFactor(float zoomFactor)
         {
+            zoomFactor = MathUtil.Clamp(0.125f, zoomFactor, 8f);
+
             imageViewControl1.ZoomFactor = zoomFactor;
-            //toolStripNumericUpDown1.Value = (decimal)zoomFactor * 100m;
         }
 
         private float GetBestFitZoomFactor()
@@ -110,6 +109,16 @@ namespace JK.ImageViewer
                 imageViewControl1.ClientSize.Width / (float)imageViewControl1.ContentImage.Width,
                 imageViewControl1.ClientSize.Height / (float)imageViewControl1.ContentImage.Height
             );
+        }
+
+        private void UpdateZoomText()
+        {
+            if (imageViewControl1.ContentImage is null)
+                toolStripStatusLabel_ImageResoultion.Text = string.Empty;
+            else
+                toolStripStatusLabel_ImageResoultion.Text =
+                    $"{imageViewControl1.ContentImage.Width}x{imageViewControl1.ContentImage.Height} \u2192 " +
+                    $"{Math.Round(imageViewControl1.ContentImage.Width * imageViewControl1.ZoomFactor)}x{Math.Round(imageViewControl1.ContentImage.Height * imageViewControl1.ZoomFactor)}";
         }
     }
 }

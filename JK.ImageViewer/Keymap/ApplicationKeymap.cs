@@ -11,6 +11,8 @@ namespace JK.ImageViewer.Keymap
     {
         private Dictionary<string, Shortcut> map;
 
+        public IEnumerable<KeyValuePair<string, Shortcut>> AllShortcuts => map.ToArray();
+
         private ApplicationKeymap() { }
 
         public Shortcut? GetShortcutForCommand(string command)

@@ -57,6 +57,7 @@ namespace JK.ImageViewer
             imageViewControl1.Size = new Size(800, 379);
             imageViewControl1.TabIndex = 1;
             imageViewControl1.Text = "imageViewControl1";
+            imageViewControl1.ZoomFactorChanged += imageViewControl1_ZoomFactorChanged;
             // 
             // menuStrip1
             // 
