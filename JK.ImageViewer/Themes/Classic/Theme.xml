@@ -22,6 +22,12 @@
         <Icon Key="Command.FolderImageNext">
             <Image Source="images\nav_right_blue.png" />
         </Icon>
+        <Icon Key="Command.ShowSettings">
+            <Image Source="images\gear.png" />
+        </Icon>
+        <Icon Key="Command.ExitApplication">
+            <Image Source="images\exit.png" />
+        </Icon>
     </Icons>
     <Colors>
         <WindowBackground>
