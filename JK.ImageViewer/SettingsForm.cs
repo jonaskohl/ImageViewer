@@ -15,6 +15,8 @@ namespace JK.ImageViewer
 {
     public partial class SettingsForm : Form
     {
+        XDocument structure;
+
         public SettingsForm()
         {
             InitializeComponent();
@@ -23,7 +25,21 @@ namespace JK.ImageViewer
             cancelButton.Text = this._("Global.Buttons.GenericCancel");
             applyButton.Text = this._("Global.Buttons.GenericApply");
 
-            LoadSettingsStructure();
+
+            // TODO Assert root tag
+            structure = XDocument.Load(Path.Combine(
+                AppDomain.CurrentDomain.BaseDirectory,
+                "Settings",
+                "SettingsMenu.xml"
+            ));
+
+            LoadSettingsStructure(0);
+        }
+
+        protected override void OnDpiChanged(DpiChangedEventArgs e)
+        {
+            base.OnDpiChanged(e);
+            LoadSettingsStructure(iconListBox1.SelectedIndex);
         }
 
         protected override void OnShown(EventArgs e)
@@ -32,26 +48,23 @@ namespace JK.ImageViewer
             CenterToParent();
         }
 
-        private void LoadSettingsStructure()
+        private void LoadSettingsStructure(int selectedIndex)
         {
-            var doc = XDocument.Load(Path.Combine(
-                AppDomain.CurrentDomain.BaseDirectory,
-                "Settings",
-                "SettingsMenu.xml"
-            ));
+            iconListBox1.SuspendLayout();
+            iconListBox1.Items.Clear();
 
-            // TODO Assert root tag
-
-            foreach (var category in doc.Root!.Elements("Category"))
+            foreach (var category in structure.Root!.Elements("Category"))
             {
                 var cat = category.Attribute("Which")!.Value;
                 iconListBox1.Items.Add(new IconListBoxItem()
                 {
                     Label = this._($"SettingsCategory.{cat}"),
-                    Image = ThemeManager.CurrentTheme.GetImage($"SettingsCategory.{cat}"),
+                    Image = ThemeManager.CurrentTheme.GetImage($"SettingsCategory.{cat}", this),
                 });
             }
-            iconListBox1.SetSelected(0, true);
+            iconListBox1.SetSelected(selectedIndex, true);
+
+            iconListBox1.ResumeLayout(true);
         }
 
         private void okButton_Click(object sender, EventArgs e)

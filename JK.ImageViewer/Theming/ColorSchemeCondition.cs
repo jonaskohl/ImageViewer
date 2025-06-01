@@ -7,7 +7,7 @@
             .Select(s => new ColorScheme(s))
             .ToArray();
 
-        public override bool Evaluate()
+        public override bool Evaluate(Control _)
         {
             return ColorSchemes.Any(s => s.IsActive());
         }

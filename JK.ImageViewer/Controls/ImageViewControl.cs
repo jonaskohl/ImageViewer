@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.ComponentModel;
 using System.Drawing.Drawing2D;
 using ImageMagick;
+using System.Windows.Forms.VisualStyles;
 
 namespace JK.ImageViewer.Controls
 {
@@ -119,6 +120,95 @@ namespace JK.ImageViewer.Controls
             Invalidate();
         }
 
+        bool isDragging = false;
+        Point dragStart;
+        Point dragEnd;
+
+        protected override void OnMouseDown(MouseEventArgs e)
+        {
+            base.OnMouseDown(e);
+
+            if (e.Button == MouseButtons.Right && ModifierKeys == Keys.Shift && ContentImage is not null)
+            {
+                isDragging = true;
+                dragStart = e.Location;
+                dragEnd = e.Location;
+                Repaint();
+            }
+        }
+
+        protected static Rectangle RectFromPoints(Point a, Point b)
+        {
+            var top = Math.Min(a.Y, b.Y);
+            var bottom = Math.Max(a.Y, b.Y);
+            var left = Math.Min(a.X, b.X);
+            var right = Math.Max(a.X, b.X);
+
+            var w = right - left;
+            var h = bottom - top;
+            return new Rectangle(left, top, w, h);
+        }
+
+        protected override void OnMouseMove(MouseEventArgs e)
+        {
+            base.OnMouseMove(e);
+
+            if (isDragging)
+            {
+                dragEnd = e.Location;
+                Repaint();
+            }
+        }
+
+        protected override void OnMouseUp(MouseEventArgs e)
+        {
+            base.OnMouseUp(e);
+
+            if (e.Button == MouseButtons.Right && isDragging)
+            {
+                isDragging = false;
+                SetZoomRegion(dragStart, dragEnd);
+            }
+        }
+
+        public void SetZoomRegion(Point topLeft, Point bottomRight)
+        {
+            SetZoomRegion(RectFromPoints(topLeft, bottomRight));
+        }
+
+        public void SetZoomRegion(Rectangle region)
+        {
+            if (ContentImage is null)
+                return;
+
+            var factor = Math.Min(
+                (float)ContentImage.Width / Math.Max(1, region.Width),
+                (float)ContentImage.Height / Math.Max(1, region.Height)
+            );
+
+            var startOffsetInImage = new Point(
+                (int)((region.X - AutoScrollPosition.X) / ZoomFactor),
+                (int)((region.Y - AutoScrollPosition.Y) / ZoomFactor)
+            );
+
+            var newOffset = new Point(
+                (int)(startOffsetInImage.X * ZoomFactor),
+                (int)(startOffsetInImage.Y * ZoomFactor)
+            );
+
+            ZoomFactor = factor;
+            AutoScrollPosition = newOffset;
+            Repaint();
+        }
+
+        protected override void OnMouseLeave(EventArgs e)
+        {
+            base.OnMouseLeave(e);
+
+            isDragging = false;
+            Repaint();
+        }
+
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
@@ -181,6 +271,10 @@ namespace JK.ImageViewer.Controls
             e.Graphics.InterpolationMode = _zoomFactor < 1 ? _downsampleMode : _upsampleMode;
             e.Graphics.DrawImage(_contentImage, displayRect);
             e.Graphics.InterpolationMode = prevInterpolationMode;
+
+            if (isDragging)
+                e.Graphics.DrawRectangle(Pens.Red, RectFromPoints(dragStart, dragEnd));
+                //ControlPaint.DrawReversibleFrame(RectangleToScreen(RectFromPoints(dragStart, dragEnd)), Color.Black, FrameStyle.Thick);
 
             e.Graphics.PixelOffsetMode = prevOffsetMode;
         }

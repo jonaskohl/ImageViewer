@@ -53,6 +53,14 @@ namespace JK.ImageViewer
             SettingsManager.Instance.SettingChanged += Instance_SettingChanged;
         }
 
+        protected override void OnDpiChanged(DpiChangedEventArgs e)
+        {
+            base.OnDpiChanged(e);
+
+            LoadAndBuildMenu();
+            LoadAndBuildToolbar();
+        }
+
         private void Instance_SettingChanged(object? sender, SettingsManager.SettingChangedEventArgs e)
         {
             switch (e.Key)
@@ -122,7 +130,7 @@ namespace JK.ImageViewer
                                 throw new Exception($"Malformed menu file: Incorrect attribute \"Command\"");
 
                             var command = availableWindowCommands[commandName];
-                            var image = ThemeManager.CurrentTheme.GetImage($"Command.{commandName}");
+                            var image = ThemeManager.CurrentTheme.GetImage($"Command.{commandName}", this);
                             var shortcut = currentKeymap.GetShortcutForCommand(commandName);
                             var button = new ToolStripMenuItem()
                             {
@@ -183,7 +191,7 @@ namespace JK.ImageViewer
                                 throw new Exception($"Malformed toolbar file: Incorrect attribute \"Command\"");
 
                             var command = availableWindowCommands[commandName];
-                            var image = ThemeManager.CurrentTheme.GetImage($"Command.{commandName}");
+                            var image = ThemeManager.CurrentTheme.GetImage($"Command.{commandName}", this);
                             var button = new ToolStripButton()
                             {
                                 Name = $"dynamicToolStripButton__{commandId++}__{commandName}",

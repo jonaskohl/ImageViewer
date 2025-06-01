@@ -5,34 +5,84 @@
 >
     <Icons>
         <Icon Key="Command.OpenFile">
-            <Image Source="images\folder_document.png" />
+            <IfScaling Factor="1">
+                <Image Source="images\1x\folder_document.png" />
+            </IfScaling>
+            <IfScaling Factor="2">
+                <Image Source="images\2x\folder_document.png" />
+            </IfScaling>
         </Icon>
         <Icon Key="Command.ZoomIn">
-            <Image Source="images\zoom_in.png" />
+            <IfScaling Factor="1">
+                <Image Source="images\1x\zoom_in.png" />
+            </IfScaling>
+            <IfScaling Factor="2">
+                <Image Source="images\2x\zoom_in.png" />
+            </IfScaling>
         </Icon>
         <Icon Key="Command.ZoomOut">
-            <Image Source="images\zoom_out.png" />
+            <IfScaling Factor="1">
+                <Image Source="images\1x\zoom_out.png" />
+            </IfScaling>
+            <IfScaling Factor="2">
+                <Image Source="images\2x\zoom_out.png" />
+            </IfScaling>
         </Icon>
         <Icon Key="Command.ZoomOriginal">
-            <Image Source="images\view_1_1.png" />
+            <IfScaling Factor="1">
+                <Image Source="images\1x\view_1_1.png" />
+            </IfScaling>
+            <IfScaling Factor="2">
+                <Image Source="images\2x\view_1_1.png" />
+            </IfScaling>
         </Icon>
         <Icon Key="Command.FolderImagePrevious">
-            <Image Source="images\nav_left.png" />
+            <IfScaling Factor="1">
+                <Image Source="images\1x\nav_left.png" />
+            </IfScaling>
+            <IfScaling Factor="2">
+                <Image Source="images\2x\nav_left.png" />
+            </IfScaling>
         </Icon>
         <Icon Key="Command.FolderImageNext">
-            <Image Source="images\nav_right.png" />
+            <IfScaling Factor="1">
+                <Image Source="images\1x\nav_right.png" />
+            </IfScaling>
+            <IfScaling Factor="2">
+                <Image Source="images\2x\nav_right.png" />
+            </IfScaling>
         </Icon>
         <Icon Key="Command.ExitApplication">
-            <Image Source="images\door_exit.png" />
+            <IfScaling Factor="1">
+                <Image Source="images\1x\door_exit.png" />
+            </IfScaling>
+            <IfScaling Factor="2">
+                <Image Source="images\2x\door_exit.png" />
+            </IfScaling>
         </Icon>
         <Icon Key="Command.ShowSettings">
-            <Image Source="images\gearwheel.png" />
+            <IfScaling Factor="1">
+                <Image Source="images\1x\gearwheel.png" />
+            </IfScaling>
+            <IfScaling Factor="2">
+                <Image Source="images\2x\gearwheel.png" />
+            </IfScaling>
         </Icon>
         <Icon Key="SettingsCategory.General">
-            <Image Source="images\tools.png" />
+            <IfScaling Factor="1">
+                <Image Source="images\1x\tools.png" />
+            </IfScaling>
+            <IfScaling Factor="2">
+                <Image Source="images\2x\tools.png" />
+            </IfScaling>
         </Icon>
         <Icon Key="SettingsCategory.Appearance">
-            <Image Source="images\eye.png" />
+            <IfScaling Factor="1">
+                <Image Source="images\1x\eye.png" />
+            </IfScaling>
+            <IfScaling Factor="2">
+                <Image Source="images\2x\eye.png" />
+            </IfScaling>
         </Icon>
     </Icons>
     <Colors>

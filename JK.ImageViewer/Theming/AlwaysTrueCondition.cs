@@ -2,7 +2,7 @@
 {
     public class AlwaysTrueCondition : ThemePropertyCondition
     {
-        public override bool Evaluate()
+        public override bool Evaluate(Control _)
         {
             return true;
         }

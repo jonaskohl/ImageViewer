@@ -43,6 +43,7 @@ namespace JK.ImageViewer.Theming
                     var directImageChild = xMappingEntry.Element("Image");
                     var conditionalChildren = xMappingEntry.Elements().Where(x =>
                         x.Name == "IfColorScheme"
+                        || x.Name == "IfScaling"
                     ).ToArray();
 
                     List<IconMappingImage> images = new();
@@ -68,6 +69,12 @@ namespace JK.ImageViewer.Theming
                                         new ColorSchemeCondition(cond.Attribute("Which")!.Value)
                                     ));
                                     break;
+                                case "IfScaling":
+                                    images.Add(new(
+                                        cond.Element("Image")!.Attribute("Source")!.Value,
+                                        new ScalingCondition(cond.Attribute("Factor")!.Value)
+                                    ));
+                                    break;
                                 default:
                                     throw new Exception("Invalid child");
                             }
@@ -91,7 +98,7 @@ namespace JK.ImageViewer.Theming
             };
         }
 
-        public Image? GetImage(string key)
+        public Image? GetImage(string key, Control controlReference)
         {
             if (!IconMapping.ContainsKey(key))
             {
@@ -105,7 +112,7 @@ namespace JK.ImageViewer.Theming
             }
 
             var mappingEntry = IconMapping[key];
-            var source = mappingEntry.Images.Where(i => i.Condition.Evaluate()).FirstOrDefault()?.Source;
+            var source = mappingEntry.Images.Where(i => i.Condition.Evaluate(controlReference)).FirstOrDefault()?.Source;
             if (source is null)
             {
                 Debug.WriteLine($"GetImageForCommand(\"{key}\") -> No matching image");

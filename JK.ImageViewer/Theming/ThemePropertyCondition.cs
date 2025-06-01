@@ -2,6 +2,6 @@
 {
     public abstract class ThemePropertyCondition
     {
-        public abstract bool Evaluate();
+        public abstract bool Evaluate(Control control);
     }
 }

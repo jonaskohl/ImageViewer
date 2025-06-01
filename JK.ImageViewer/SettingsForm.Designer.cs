@@ -135,8 +135,8 @@ namespace JK.ImageViewer
             // SettingsForm
             // 
             AcceptButton = applyButton;
-            AutoScaleDimensions = new SizeF(7F, 15F);
-            AutoScaleMode = AutoScaleMode.Font;
+            AutoScaleDimensions = new SizeF(96F, 96F);
+            AutoScaleMode = AutoScaleMode.Dpi;
             CancelButton = cancelButton;
             ClientSize = new Size(602, 392);
             Controls.Add(tableLayoutPanel1);
