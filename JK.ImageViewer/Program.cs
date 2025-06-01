@@ -15,10 +15,11 @@ namespace JK.ImageViewer
             ApplicationConfiguration.Initialize();
 
             SettingsManager.EnsureInstance();
-            Theme theme = ThemeManager.LoadTheme(SettingsManager.Instance.GetPreference("Theme", "Default"));
-            Application.SetColorMode(theme.ThemeColorMode);
+            LocalizationManager.LoadLocale(CurrentSettings.Language);
+            ThemeManager.LoadTheme(CurrentSettings.Theme);
+            Application.SetColorMode(ThemeManager.CurrentTheme.ThemeColorMode);
             ToolStripManager.RenderMode = ToolStripManagerRenderMode.Professional;
-            var form = new MainForm(theme);
+            var form = new MainForm();
             if (args.Length > 0)
                 form.LoadImage(args[0]);
             Application.Run(form);

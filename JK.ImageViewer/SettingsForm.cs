@@ -1,4 +1,6 @@
-﻿using System;
+﻿using JK.ImageViewer.Controls;
+using JK.ImageViewer.Theming;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -16,8 +18,18 @@ namespace JK.ImageViewer
         public SettingsForm()
         {
             InitializeComponent();
+            Text = this._("Global.DialogTitles.Settings");
+            okButton.Text = this._("Global.Buttons.GenericOkay");
+            cancelButton.Text = this._("Global.Buttons.GenericCancel");
+            applyButton.Text = this._("Global.Buttons.GenericApply");
 
             LoadSettingsStructure();
+        }
+
+        protected override void OnShown(EventArgs e)
+        {
+            base.OnShown(e);
+            CenterToParent();
         }
 
         private void LoadSettingsStructure()
@@ -32,9 +44,14 @@ namespace JK.ImageViewer
 
             foreach (var category in doc.Root!.Elements("Category"))
             {
-                fancyTreeView1.Nodes.Add(category.Attribute("Which")!.Value);
+                var cat = category.Attribute("Which")!.Value;
+                iconListBox1.Items.Add(new IconListBoxItem()
+                {
+                    Label = this._($"SettingsCategory.{cat}"),
+                    Image = ThemeManager.CurrentTheme.GetImage($"SettingsCategory.{cat}"),
+                });
             }
-            fancyTreeView1.SelectedNode = fancyTreeView1.Nodes.Cast<TreeNode>().FirstOrDefault();
+            iconListBox1.SetSelected(0, true);
         }
 
         private void okButton_Click(object sender, EventArgs e)

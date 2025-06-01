@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Language>
+    <String Key="_LanguageName">Deutsch (Deutschland)</String>
+    <String Key="Menu.File">&amp;Datei</String>
+    <String Key="Menu.View">&amp;Ansicht</String>
+    <String Key="Menu.View/Zoom">&amp;Zoom</String>
+    <String Key="Command.OpenFile">&amp;Öffnen...</String>
+    <String Key="Command.FolderImagePrevious">&amp;Vorheriges Bild in Ordner</String>
+    <String Key="Command.FolderImageNext">&amp;Nächstes Bild in Ordner</String>
+    <String Key="Command.ShowSettings">Ein&amp;stellungen...</String>
+    <String Key="Command.CloseImage">Bild s&amp;chließen</String>
+    <String Key="Command.ExitApplication">Anwendung b&amp;eenden</String>
+    <String Key="Command.ZoomIn">H&amp;ineinzoomen</String>
+    <String Key="Command.ZoomOut">Hinausz&amp;oomen</String>
+    <String Key="Command.ZoomOriginal">Zoom zu&amp;rücksetzen</String>
+    <String Key="Command.ZoomToFit">&amp;Einpassen</String>
+    <String Key="SettingsCategory.General">Allgemein</String>
+    <String Key="SettingsCategory.Appearance">Erscheinungsbild</String>
+    <String Key="Global.Buttons.GenericOkay">&amp;OK</String>
+    <String Key="Global.Buttons.GenericCancel">&amp;Abbrechen</String>
+    <String Key="Global.Buttons.GenericApply">An&amp;wenden</String>
+    <String Key="Global.DialogTitles.Settings">Einstellungen</String>
+</Language>

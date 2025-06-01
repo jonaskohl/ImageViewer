@@ -5,9 +5,7 @@
 >
     <Icons>
         <Icon Key="Command.OpenFile">
-            <IfColorScheme Which="Light,Dark">
-                <Image Source="images\folder_document.png" />
-            </IfColorScheme>
+            <Image Source="images\folder_document.png" />
         </Icon>
         <Icon Key="Command.ZoomIn">
             <Image Source="images\zoom_in.png" />
@@ -29,6 +27,12 @@
         </Icon>
         <Icon Key="Command.ShowSettings">
             <Image Source="images\gearwheel.png" />
+        </Icon>
+        <Icon Key="SettingsCategory.General">
+            <Image Source="images\tools.png" />
+        </Icon>
+        <Icon Key="SettingsCategory.Appearance">
+            <Image Source="images\eye.png" />
         </Icon>
     </Icons>
     <Colors>

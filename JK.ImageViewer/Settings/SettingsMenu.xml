@@ -1,9 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <SettingsMenu>
     <Category Which="General">
-        <Setting Key="EnableTransparencyGrid" />
+        <Setting Key="ImageUpsampleMode" />
+        <Setting Key="ImageDownsampleMode" />
     </Category>
     <Category Which="Appearance">
         <Setting Key="ApplicationTheme" />
+        <Setting Key="EnableTransparencyGrid" />
     </Category>
 </SettingsMenu>

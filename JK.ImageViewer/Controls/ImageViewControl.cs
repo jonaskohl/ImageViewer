@@ -62,6 +62,32 @@ namespace JK.ImageViewer.Controls
             }
         }
 
+        private InterpolationMode _downsampleMode = InterpolationMode.HighQualityBicubic;
+
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public InterpolationMode DownsampleMode
+        {
+            get => _downsampleMode;
+            set
+            {
+                _downsampleMode = value;
+                Repaint();
+            }
+        }
+
+        private InterpolationMode _upsampleMode = InterpolationMode.NearestNeighbor;
+
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public InterpolationMode UpsampleMode
+        {
+            get => _upsampleMode;
+            set
+            {
+                _upsampleMode = value;
+                Repaint();
+            }
+        }
+
         public ImageViewControl()
         {
             DoubleBuffered = true;
@@ -152,7 +178,7 @@ namespace JK.ImageViewer.Controls
             }
 
             var prevInterpolationMode = e.Graphics.InterpolationMode;
-            e.Graphics.InterpolationMode = _zoomFactor < 1 ? InterpolationMode.HighQualityBicubic : InterpolationMode.NearestNeighbor;
+            e.Graphics.InterpolationMode = _zoomFactor < 1 ? _downsampleMode : _upsampleMode;
             e.Graphics.DrawImage(_contentImage, displayRect);
             e.Graphics.InterpolationMode = prevInterpolationMode;
 

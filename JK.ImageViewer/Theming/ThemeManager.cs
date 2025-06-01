@@ -8,9 +8,18 @@ namespace JK.ImageViewer.Theming
 {
     public static class ThemeManager
     {
+        private static Theme? _currentTheme;
+
+        public static Theme CurrentTheme => _currentTheme!;
+
         public static string ThemeDirectory => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Themes");
 
-        public static Theme LoadTheme(string themeName)
+        public static void LoadTheme(string themeName)
+        {
+            _currentTheme = GetTheme(themeName);
+        }
+
+        public static Theme GetTheme(string themeName)
         {
             return Theme.LoadFromFile(Path.Combine(
                 ThemeDirectory,

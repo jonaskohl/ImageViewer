@@ -8,6 +8,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <NoWarn>$(NoWarn);WFO5001;WFO5002</NoWarn>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
     </PropertyGroup>
 
     <ItemGroup>
@@ -16,6 +17,13 @@
     </ItemGroup>
 
     <ItemGroup>
+        <Using Include="JK.ImageViewer.Localization" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Update="Controls\FancyListView.cs">
+          <SubType>Component</SubType>
+        </Compile>
         <Compile Update="Controls\FancyTreeView.cs">
           <SubType>Component</SubType>
         </Compile>
@@ -46,8 +54,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Remove="Settings\SettingsForm.cs" />
-      <Compile Remove="Settings\SettingsForm.Designer.cs" />
+        <Content Include="Localization\Languages\**\*.*">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
 
 </Project>

@@ -9,32 +9,32 @@ namespace JK.ImageViewer
 {
     public partial class MainForm
     {
-        [WindowCommand("Open file...", MenuLocation = "File")]
+        [WindowCommand]
         public void Command_OpenFile()
         {
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
                 LoadImage(openFileDialog1.FileName);
         }
 
-        [WindowCommand("Zoom in")]
+        [WindowCommand]
         public void Command_ZoomIn()
         {
             SetZoomFactor(imageViewControl1.ZoomFactor + 0.125f);
         }
 
-        [WindowCommand("Reset zoom")]
+        [WindowCommand]
         public void Command_ZoomOriginal()
         {
             SetZoomFactor(1f);
         }
 
-        [WindowCommand("Zoom out")]
+        [WindowCommand]
         public void Command_ZoomOut()
         {
             SetZoomFactor(imageViewControl1.ZoomFactor - 0.125f);
         }
 
-        [WindowCommand("Previous image in folder")]
+        [WindowCommand]
         public void Command_FolderImagePrevious()
         {
             if (!TryFetchFolder())
@@ -44,7 +44,7 @@ namespace JK.ImageViewer
             LoadImage(folderFiles[folderIndex]);
         }
 
-        [WindowCommand("Next image in folder")]
+        [WindowCommand]
         public void Command_FolderImageNext()
         {
             if (!TryFetchFolder())
@@ -54,25 +54,25 @@ namespace JK.ImageViewer
             LoadImage(folderFiles[folderIndex]);
         }
 
-        [WindowCommand("Close")]
+        [WindowCommand]
         public void Command_CloseImage()
         {
             ClearImage(true);
         }
 
-        [WindowCommand("Exit")]
+        [WindowCommand]
         public void Command_ExitApplication()
         {
             Close();
         }
 
-        [WindowCommand("Zoom to fit")]
+        [WindowCommand]
         public void Command_ZoomToFit()
         {
             SetZoomFactor(GetBestFitZoomFactor());
         }
 
-        [WindowCommand("Settings...")]
+        [WindowCommand]
         public void Command_ShowSettings()
         {
             using var diag = new SettingsForm();

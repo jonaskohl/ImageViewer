@@ -22,16 +22,15 @@ namespace JK.ImageViewer
 
         Dictionary<string, Command> availableWindowCommands;
         ApplicationKeymap currentKeymap;
-        Theme currentTheme;
 
-        public MainForm(Theme initialTheme)
+        public MainForm()
         {
             InitializeComponent();
             baseTitle = Text;
 
-            imageViewControl1.ShowCheckerboard = SettingsManager.Instance.GetPreference("EnableTransparencyGrid", true);
-
-            //toolStripNumericUpDown1.NumericUpDown.ValueChanged += NumericUpDown_ValueChanged;
+            imageViewControl1.ShowCheckerboard = CurrentSettings.EnableTransparencyGrid;
+            imageViewControl1.UpsampleMode = CurrentSettings.ImageUpsampleMode;
+            imageViewControl1.DownsampleMode = CurrentSettings.ImageDownsampleMode;
 
             string filter =
                 $"All supported files|{string.Join(";", MagickNET.SupportedFormats
@@ -46,7 +45,6 @@ namespace JK.ImageViewer
                 ) + "|All files|*.*";
             openFileDialog1.Filter = filter;
 
-            currentTheme = initialTheme;
             availableWindowCommands = GetAvailableCommands();
             currentKeymap = ApplicationKeymap.LoadFromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Settings", "Keymap.xml"));
             LoadAndBuildMenu();
@@ -57,8 +55,18 @@ namespace JK.ImageViewer
 
         private void Instance_SettingChanged(object? sender, SettingsManager.SettingChangedEventArgs e)
         {
-            if (e.Key == "EnableTransparencyGrid")
-                imageViewControl1.ShowCheckerboard = SettingsManager.Instance.GetPreference("EnableTransparencyGrid", true);
+            switch (e.Key)
+            {
+                case "EnableTransparencyGrid":
+                    imageViewControl1.ShowCheckerboard = CurrentSettings.EnableTransparencyGrid;
+                    break;
+                case "ImageUpsampleMode":
+                    imageViewControl1.UpsampleMode = CurrentSettings.ImageUpsampleMode;
+                    break;
+                case "ImageDownsampleMode":
+                    imageViewControl1.DownsampleMode = CurrentSettings.ImageDownsampleMode;
+                    break;
+            }
         }
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
@@ -74,20 +82,6 @@ namespace JK.ImageViewer
             }
 
             return base.ProcessCmdKey(ref msg, keyData);
-        }
-
-        private void SelectTheme(string theme)
-        {
-            currentTheme = ThemeManager.LoadTheme(theme);
-            Application.SetColorMode(currentTheme.ThemeColorMode);
-            LoadAndBuildToolbar();
-            Invalidate();
-            Opacity = 0;
-            Application.DoEvents();
-            Opacity = 1;
-
-            if (MessageBox.Show("To properly apply the theme you need to restart the application!\r\n\r\nDo you want to restart the application now?", "", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
-                Application.Restart();
         }
 
         private void LoadAndBuildMenu()
@@ -106,16 +100,18 @@ namespace JK.ImageViewer
 
             var commandId = 0;
 
-            void ProcessMenu(XElement menuElement, ToolStripItemCollection menuStripItems)
+            void ProcessMenu(XElement menuElement, ToolStripItemCollection menuStripItems, string menuPath = "")
             {
                 var name = menuElement.Name.ToString();
                 switch (name)
                 {
                     case "Menu":
                         {
-                            var parent = new ToolStripMenuItem(menuElement.Attribute("Label")!.Value);
+                            var menuKey = menuElement.Attribute("Key")!.Value;
+                            var fullMenuPath = menuPath + menuKey;
+                            var parent = new ToolStripMenuItem(this._("Menu." + fullMenuPath));
                             foreach (var el in menuElement.Elements())
-                                ProcessMenu(el, parent.DropDownItems);
+                                ProcessMenu(el, parent.DropDownItems, fullMenuPath + "/");
                             menuStripItems.Add(parent);
                             break;
                         }
@@ -126,12 +122,12 @@ namespace JK.ImageViewer
                                 throw new Exception($"Malformed menu file: Incorrect attribute \"Command\"");
 
                             var command = availableWindowCommands[commandName];
-                            var image = currentTheme.GetImage($"Command.{commandName}");
+                            var image = ThemeManager.CurrentTheme.GetImage($"Command.{commandName}");
                             var shortcut = currentKeymap.GetShortcutForCommand(commandName);
                             var button = new ToolStripMenuItem()
                             {
                                 Name = $"dynamicToolStripMenuItem__{commandId++}__{commandName}",
-                                Text = command.Info.DisplayNameTranslationKey,
+                                Text = this._($"Command.{commandName}"),
                                 Image = image,
                                 ShortcutKeyDisplayString = shortcut?.ToString(),
                             };
@@ -187,11 +183,11 @@ namespace JK.ImageViewer
                                 throw new Exception($"Malformed toolbar file: Incorrect attribute \"Command\"");
 
                             var command = availableWindowCommands[commandName];
-                            var image = currentTheme.GetImage($"Command.{commandName}");
+                            var image = ThemeManager.CurrentTheme.GetImage($"Command.{commandName}");
                             var button = new ToolStripButton()
                             {
                                 Name = $"dynamicToolStripButton__{commandId++}__{commandName}",
-                                Text = command.Info.DisplayNameTranslationKey,
+                                Text = this._($"Command.{commandName}"),
                                 Image = image,
                                 DisplayStyle = image is null ? ToolStripItemDisplayStyle.Text : ToolStripItemDisplayStyle.Image,
                             };

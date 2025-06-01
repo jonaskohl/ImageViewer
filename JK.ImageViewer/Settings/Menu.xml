@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <MenuRoot>
-    <Menu Label="&amp;File">
+    <Menu Key="File">
         <Command Command="OpenFile" />
         <Separator />
         <Command Command="FolderImagePrevious" />
@@ -11,8 +11,8 @@
         <Command Command="CloseImage" />
         <Command Command="ExitApplication" />
     </Menu>
-    <Menu Label="&amp;View">
-        <Menu Label="&amp;Zoom">
+    <Menu Key="View">
+        <Menu Key="Zoom">
             <Command Command="ZoomIn" />
             <Command Command="ZoomOriginal" />
             <Command Command="ZoomOut" />
