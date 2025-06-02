@@ -1,11 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <SettingsMenu>
     <Category Which="General">
-        <Setting Key="ImageUpsampleMode" />
-        <Setting Key="ImageDownsampleMode" />
+        <Setting Key="Language" Editor="StringPropertyEditor" />
+        <!--
+        <Setting Key="ImageUpsampleMode" Editor="EnumPropertyEditor\System.Drawing.Drawing2D.InterpolationMode" />
+        <Setting Key="ImageDownsampleMode" Editor="EnumPropertyEditor\System.Drawing.Drawing2D.InterpolationMode" />
+        -->
     </Category>
     <Category Which="Appearance">
-        <Setting Key="ApplicationTheme" />
-        <Setting Key="EnableTransparencyGrid" />
+        <Setting Key="Theme" Editor="StringPropertyEditor" />
+        <Setting Key="EnableTransparencyGrid" Editor="BoolPropertyEditor" />
     </Category>
 </SettingsMenu>

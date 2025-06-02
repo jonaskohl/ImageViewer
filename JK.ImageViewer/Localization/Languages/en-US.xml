@@ -20,4 +20,7 @@
     <String Key="Global.Buttons.GenericCancel">&amp;Cancel</String>
     <String Key="Global.Buttons.GenericApply">&amp;Apply</String>
     <String Key="Global.DialogTitles.Settings">Settings</String>
+    <String Key="Setting.Language">Language</String>
+    <String Key="Setting.Theme">Theme</String>
+    <String Key="Setting.EnableTransparencyGrid">Enable transparency grid</String>
 </Language>

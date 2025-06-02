@@ -36,6 +36,7 @@ namespace JK.ImageViewer
             cancelButton = new Button();
             applyButton = new Button();
             iconListBox1 = new IconListBox();
+            flowLayoutPanel2 = new FlowLayoutPanel();
             columnHeader1 = new ColumnHeader();
             tableLayoutPanel1.SuspendLayout();
             flowLayoutPanel1.SuspendLayout();
@@ -48,6 +49,7 @@ namespace JK.ImageViewer
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
             tableLayoutPanel1.Controls.Add(flowLayoutPanel1, 0, 1);
             tableLayoutPanel1.Controls.Add(iconListBox1, 0, 0);
+            tableLayoutPanel1.Controls.Add(flowLayoutPanel2, 1, 0);
             tableLayoutPanel1.Dock = DockStyle.Fill;
             tableLayoutPanel1.Location = new Point(12, 12);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -127,6 +129,17 @@ namespace JK.ImageViewer
             iconListBox1.Size = new Size(197, 353);
             iconListBox1.TabIndex = 0;
             // 
+            // flowLayoutPanel2
+            // 
+            flowLayoutPanel2.AutoScroll = true;
+            flowLayoutPanel2.Dock = DockStyle.Fill;
+            flowLayoutPanel2.FlowDirection = FlowDirection.TopDown;
+            flowLayoutPanel2.Location = new Point(200, 0);
+            flowLayoutPanel2.Margin = new Padding(0);
+            flowLayoutPanel2.Name = "flowLayoutPanel2";
+            flowLayoutPanel2.Size = new Size(378, 353);
+            flowLayoutPanel2.TabIndex = 2;
+            // 
             // columnHeader1
             // 
             columnHeader1.Text = "";
@@ -163,5 +176,6 @@ namespace JK.ImageViewer
         private Button applyButton;
         private IconListBox iconListBox1;
         private ColumnHeader columnHeader1;
+        private FlowLayoutPanel flowLayoutPanel2;
     }
 }

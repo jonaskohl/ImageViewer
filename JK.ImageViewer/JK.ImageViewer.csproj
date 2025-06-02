@@ -27,6 +27,9 @@
         <Compile Update="Controls\FancyTreeView.cs">
           <SubType>Component</SubType>
         </Compile>
+        <Compile Update="Controls\SettingsEditors\BoolPropertyEditor.cs">
+          <SubType>Component</SubType>
+        </Compile>
         <Compile Update="Properties\Resources.Designer.cs">
             <DesignTime>True</DesignTime>
             <AutoGen>True</AutoGen>

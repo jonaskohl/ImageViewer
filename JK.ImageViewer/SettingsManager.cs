@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -63,16 +64,52 @@ namespace JK.ImageViewer
             }
         }
 
+        public object GetPreference(string key, Type targetType, object defaultValue)
+        {
+            if (!settings.ContainsKey(key))
+                return defaultValue;
+            try
+            {
+                return TypeDescriptor.GetConverter(targetType).ConvertFrom(settings[key]) ?? defaultValue;
+            }
+            catch
+            {
+                return defaultValue;
+            }
+        }
+
+        public string SerializeValue<T>(T value)
+        {
+            return SerializeValue(typeof(T), value);
+        }
+
+        public string SerializeValue(object? value)
+        {
+            return SerializeValue(value?.GetType() ?? typeof(object), value);
+        }
+
+        public string SerializeValue(Type valueType, object? value)
+        {
+            return TypeDescriptor.GetConverter(valueType).ConvertToString(value) ?? "";
+        }
+
         public void SetPreference<T>(string key, T value) where T : IConvertible
         {
+            SetSerializedPreference(key, SerializeValue(value));
+        }
+
+        public void SetSerializedPreference(string key, string value)
+        {
             var oldValue = settings.ContainsKey(key) ? settings[key] : null;
-            var newValue = TypeDescriptor.GetConverter(typeof(T)).ConvertToString(value)!;
-            settings[key] = newValue;
+            settings[key] = value;
+
+            Debug.WriteLine($"SettingChanged:> (Key={key}) (OldValue={oldValue}) (NewValue={value})");
+
             SettingChanged?.Invoke(null, new SettingChangedEventArgs()
             {
                 Key = key,
                 OldValue = oldValue,
-                NewValue = newValue,
+                NewValue = value,
             });
         }
 
