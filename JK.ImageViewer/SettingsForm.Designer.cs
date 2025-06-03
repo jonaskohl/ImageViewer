@@ -108,6 +108,7 @@ namespace JK.ImageViewer
             // 
             applyButton.AutoSize = true;
             applyButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            applyButton.Enabled = false;
             applyButton.FlatStyle = FlatStyle.System;
             applyButton.Location = new Point(153, 0);
             applyButton.Margin = new Padding(3, 0, 0, 0);

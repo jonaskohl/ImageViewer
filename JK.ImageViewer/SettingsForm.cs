@@ -1,6 +1,7 @@
 ﻿using JK.ImageViewer.Controls;
 using JK.ImageViewer.Controls.SettingsEditors;
 using JK.ImageViewer.Theming;
+using JK.ImageViewer.ValueListProviders;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -19,16 +20,13 @@ namespace JK.ImageViewer
     {
         XDocument structure;
         Dictionary<string, Type> editorTypeCache = new();
+        Dictionary<string, Type> providerTypeCache = new();
 
         Dictionary<string, string> pendingSettings = new();
 
         public SettingsForm()
         {
             InitializeComponent();
-            Text = this._("Global.DialogTitles.Settings");
-            okButton.Text = this._("Global.Buttons.GenericOkay");
-            cancelButton.Text = this._("Global.Buttons.GenericCancel");
-            applyButton.Text = this._("Global.Buttons.GenericApply");
 
 
             // TODO Assert root tag
@@ -41,7 +39,24 @@ namespace JK.ImageViewer
             iconListBox1.SelectedIndexChanged += IconListBox1_SelectedIndexChanged;
             flowLayoutPanel2.Layout += FlowLayoutPanel2_Layout;
 
+            ApplyStaticLocalization();
             LoadSettingsStructure();
+
+            LocalizationManager.LanguageChanged += LocalizationManager_LanguageChanged;
+        }
+
+        private void ApplyStaticLocalization()
+        {
+            Text = this._("Global.DialogTitles.Settings");
+            okButton.Text = this._("Global.Buttons.GenericOkay");
+            cancelButton.Text = this._("Global.Buttons.GenericCancel");
+            applyButton.Text = this._("Global.Buttons.GenericApply");
+        }
+
+        private void LocalizationManager_LanguageChanged(object? sender, EventArgs e)
+        {
+            ApplyStaticLocalization();
+            LoadSettingsStructure(iconListBox1.SelectedIndex);
         }
 
         private void FlowLayoutPanel2_Layout(object? sender, LayoutEventArgs e)
@@ -75,10 +90,10 @@ namespace JK.ImageViewer
             CenterToParent();
         }
 
-        private void LoadSettingsStructure()
+        private void LoadSettingsStructure(int index = 0)
         {
-            LoadIcons(0);
-            BuildEditor(0);
+            LoadIcons(index);
+            BuildEditor(index);
         }
 
         private void BuildEditor(int categoryIndex)
@@ -105,8 +120,23 @@ namespace JK.ImageViewer
                 ctrlEditorInstance.Width = w;
                 ctrlEditorInstance.MinimumSize = new Size(w, 0);
                 propEditorInstance.PropertyName = key;
+
+                if (editorInstance is IValueListPropertyEditor listEditorInstance)
+                {
+                    var providerName = xSetting.Attribute("ValueListProvider")!.Value;
+                    if (!providerTypeCache.ContainsKey(providerName))
+                        CacheProviderType(providerName);
+                    var providerType = providerTypeCache[providerName];
+                    var providerInstance = (IValueListProvider)Activator.CreateInstance(providerType)!;
+                    var values = providerInstance.GetValues();
+                    listEditorInstance.ValueListDisplayMember = providerInstance.DisplayMember;
+                    listEditorInstance.ValueListValueMember = providerInstance.ValueMember;
+                    listEditorInstance.ValueList = values;
+                }
+
                 propEditorInstance.SerializedValue = SettingsManager.Instance.SerializeValue(tCurrentSettings.GetProperty(key, BindingFlags.Static | BindingFlags.Public)?.GetValue(null));
                 propEditorInstance.ValueChanged += (s, e) => ScheduleSettingChange(key, propEditorInstance.SerializedValue);
+
                 flowLayoutPanel2.Controls.Add(ctrlEditorInstance);
             }
             flowLayoutPanel2.ResumeLayout(true);
@@ -115,6 +145,7 @@ namespace JK.ImageViewer
         private void ScheduleSettingChange(string key, string serializedValue)
         {
             pendingSettings[key] = serializedValue;
+            applyButton.Enabled = true;
         }
 
         private void CacheEditorType(string editorName)
@@ -136,6 +167,23 @@ namespace JK.ImageViewer
                 throw new ArgumentException($"Editor type must have an attribute of type {nameof(SettingsEditorAttribute)}", nameof(editorName));
 
             editorTypeCache[editorName] = type;
+        }
+
+        private void CacheProviderType(string providerName)
+        {
+            var fullTypeName = "JK.ImageViewer.ValueListProviders." + providerName;
+
+            var type = Type.GetType(fullTypeName);
+            if (type is null)
+                throw new ArgumentException($"Value list provider type {fullTypeName} not found", nameof(providerName));
+            if (type.IsAbstract)
+                throw new ArgumentException("Value list provider type cannot be abstract", nameof(providerName));
+            if (!type.IsClass)
+                throw new ArgumentException("Value list provider type must be a class", nameof(providerName));
+            if (!type.IsAssignableTo(typeof(IValueListProvider)))
+                throw new ArgumentException($"Value list provider type must implement {nameof(IValueListProvider)}", nameof(providerName));
+
+            providerTypeCache[providerName] = type;
         }
 
         private void LoadIcons(int selectedIndex)

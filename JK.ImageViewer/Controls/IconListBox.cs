@@ -75,16 +75,22 @@ namespace JK.ImageViewer.Controls
             var iconLeftSpacing = (int)(ICON_LEFT_SPACING * currentScalingFactor);
             var iconTextSpacing = (int)(ICON_TEXT_SPACING * currentScalingFactor);
 
-            var iconRect = new Rectangle(
-                e.Bounds.X + iconLeftSpacing,
-                (int)(e.Bounds.Y + (e.Bounds.Height - currentIconHeight) / 2f),
-                currentIconHeight,
-                currentIconHeight
-            );
+            var iconRect = icon is not null
+                ? new Rectangle(
+                    e.Bounds.X + iconLeftSpacing,
+                    (int)(e.Bounds.Y + (e.Bounds.Height - currentIconHeight) / 2f),
+                    currentIconHeight,
+                    currentIconHeight
+                )
+                : Rectangle.Empty;
             var textRect = new Rectangle(
-                iconRect.Right + iconTextSpacing + iconLeftSpacing,
+                icon is not null
+                    ? (iconRect.Right + iconTextSpacing + iconLeftSpacing)
+                    : e.Bounds.X,
                 e.Bounds.Y,
-                e.Bounds.Width - iconRect.Right - iconTextSpacing,
+                icon is not null
+                    ? (e.Bounds.Width - iconRect.Right - iconTextSpacing)
+                    : e.Bounds.Width,
                 e.Bounds.Height
             );
 
@@ -104,8 +110,6 @@ namespace JK.ImageViewer.Controls
 
             if (icon is not null)
                 e.Graphics.DrawImage(icon, iconRect);
-            else
-                e.Graphics.FillRectangle(Brushes.Red, iconRect);
 
             TextRenderer.DrawText(e.Graphics, label, e.Font, textRect, ForeColor, TextFormatFlags.Left | TextFormatFlags.VerticalCenter);
 

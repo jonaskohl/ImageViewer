@@ -26,7 +26,7 @@ namespace JK.ImageViewer.Controls.SettingsEditors
             set
             {
                 _propertyName = value;
-                label.Text = this._($"Setting.{PropertyName}");
+                label.Text = this._($"Setting.{PropertyName}") + ":";
             }
         }
 
@@ -75,7 +75,7 @@ namespace JK.ImageViewer.Controls.SettingsEditors
 
             label = new Label()
             {
-                Text = this._($"Setting.{PropertyName}"),
+                Text = this._($"Setting.{PropertyName}") + ":",
                 AutoSize = true,
                 TextAlign = ContentAlignment.MiddleLeft,
                 Anchor = AnchorStyles.Left,

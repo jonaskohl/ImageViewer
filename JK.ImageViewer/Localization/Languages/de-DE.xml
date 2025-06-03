@@ -1,6 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<Language>
-    <String Key="_LanguageName">Deutsch (Deutschland)</String>
+<Language Name="Deutsch (Deutschland)">
     <String Key="Menu.File">&amp;Datei</String>
     <String Key="Menu.View">&amp;Ansicht</String>
     <String Key="Menu.View/Zoom">&amp;Zoom</String>
@@ -20,4 +19,7 @@
     <String Key="Global.Buttons.GenericCancel">&amp;Abbrechen</String>
     <String Key="Global.Buttons.GenericApply">An&amp;wenden</String>
     <String Key="Global.DialogTitles.Settings">Einstellungen</String>
+    <String Key="Setting.Language">Sprache</String>
+    <String Key="Setting.Theme">Erscheinungsbild</String>
+    <String Key="Setting.EnableTransparencyGrid">Transparenzraster aktivieren</String>
 </Language>

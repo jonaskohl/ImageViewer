@@ -31,23 +31,24 @@ namespace JK.ImageViewer
         }
 
         public string PreferencesPath => Path.Combine(
-            AppDomain.CurrentDomain.BaseDirectory,
-            "Settings",
+            Environment.ExpandEnvironmentVariables(@"%appdata%\Jonas Kohl\ImageViewer"),
             "Preferences.xml"
         );
 
         private SettingsManager()
         {
-            var doc = XDocument.Load(PreferencesPath);
+            var doc = File.Exists(PreferencesPath)
+                ? XDocument.Load(PreferencesPath)
+                : null;
 
             // TODO
 
-            settings = doc.Root!
+            settings = doc?.Root?
                 .Elements("Setting")
                 .ToDictionary(
                     el => el.Attribute("Key")!.Value,
                     el => el.Attribute("Value")!.Value
-                );
+                ) ?? new();
         }
 
         public T GetPreference<T>(string key, T defaultValue) where T : IConvertible
@@ -115,6 +116,10 @@ namespace JK.ImageViewer
 
         public void Save()
         {
+            var dir = Path.GetDirectoryName(PreferencesPath);
+            if (dir is not null && !Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
+
             new XDocument(
                 new XElement("Preferences",
                     settings

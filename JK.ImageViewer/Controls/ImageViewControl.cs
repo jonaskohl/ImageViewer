@@ -12,6 +12,8 @@ namespace JK.ImageViewer.Controls
 {
     internal class ImageViewControl : ScrollableControl
     {
+        private Bitmap? frameCache = null;
+
         public event EventHandler? ZoomFactorChanged;
 
         private float _zoomFactor = 1.0f;
@@ -23,7 +25,7 @@ namespace JK.ImageViewer.Controls
             {
                 _zoomFactor = value;
                 ZoomFactorChanged?.Invoke(this, EventArgs.Empty);
-                Repaint();
+                InvalidateFrameCache();
             }
         }
 
@@ -35,7 +37,7 @@ namespace JK.ImageViewer.Controls
             set
             {
                 _showCheckerboard = value;
-                Repaint();
+                InvalidateFrameCache();
             }
         }
 
@@ -47,7 +49,7 @@ namespace JK.ImageViewer.Controls
             set
             {
                 _contentImage = value;
-                Repaint();
+                InvalidateFrameCache();
             }
         }
 
@@ -72,7 +74,7 @@ namespace JK.ImageViewer.Controls
             set
             {
                 _downsampleMode = value;
-                Repaint();
+                InvalidateFrameCache();
             }
         }
 
@@ -85,7 +87,7 @@ namespace JK.ImageViewer.Controls
             set
             {
                 _upsampleMode = value;
-                Repaint();
+                InvalidateFrameCache();
             }
         }
 
@@ -118,6 +120,12 @@ namespace JK.ImageViewer.Controls
         private void Repaint()
         {
             Invalidate();
+        }
+
+        protected override void OnResize(EventArgs e)
+        {
+            base.OnResize(e);
+            InvalidateFrameCache();
         }
 
         bool isDragging = false;
@@ -181,24 +189,31 @@ namespace JK.ImageViewer.Controls
             if (ContentImage is null)
                 return;
 
-            var factor = Math.Min(
-                (float)ContentImage.Width / Math.Max(1, region.Width),
-                (float)ContentImage.Height / Math.Max(1, region.Height)
-            );
+            var regionInImageSpace = RectangleToImage(region);
 
-            var startOffsetInImage = new Point(
-                (int)((region.X - AutoScrollPosition.X) / ZoomFactor),
-                (int)((region.Y - AutoScrollPosition.Y) / ZoomFactor)
+            var factor = Math.Min(
+                (float)ContentImage.Width / Math.Max(1, regionInImageSpace.Width),
+                (float)ContentImage.Height / Math.Max(1, regionInImageSpace.Height)
             );
 
             var newOffset = new Point(
-                (int)(startOffsetInImage.X * ZoomFactor),
-                (int)(startOffsetInImage.Y * ZoomFactor)
+                (int)(regionInImageSpace.X * ZoomFactor),
+                (int)(regionInImageSpace.Y * ZoomFactor)
             );
 
             ZoomFactor = factor;
             AutoScrollPosition = newOffset;
             Repaint();
+        }
+
+        private Rectangle RectangleToImage(Rectangle region)
+        {
+            return new Rectangle(
+                (int)((region.X + AutoScrollPosition.X) / ZoomFactor),
+                (int)((region.Y + AutoScrollPosition.Y) / ZoomFactor),
+                (int)(region.Width / ZoomFactor),
+                (int)(region.Height / ZoomFactor)
+            );
         }
 
         protected override void OnMouseLeave(EventArgs e)
@@ -234,8 +249,46 @@ namespace JK.ImageViewer.Controls
                 return;
             }
 
-            var prevOffsetMode = e.Graphics.PixelOffsetMode;
-            e.Graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+            if (frameCache is null)
+                RecreateFrameCache();
+
+            if (frameCache is null)
+                return;
+
+            e.Graphics.DrawImageUnscaled(frameCache, Point.Empty);
+
+            if (isDragging)
+            {
+                var prevOffsetMode = e.Graphics.PixelOffsetMode;
+                e.Graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+                using var pen = new Pen(Color.Black, 1f)
+                {
+                    DashStyle = DashStyle.Dot,
+                };
+                e.Graphics.DrawRectangle(Pens.White, RectFromPoints(dragStart, dragEnd));
+                e.Graphics.DrawRectangle(pen, RectFromPoints(dragStart, dragEnd));
+
+                e.Graphics.PixelOffsetMode = prevOffsetMode;
+            }
+        }
+
+        private void InvalidateFrameCache()
+        {
+            frameCache = null;
+            Repaint();
+        }
+
+        private void RecreateFrameCache()
+        {
+            if (_contentImage is null || _imageLoadException is not null)
+                return;
+
+            frameCache = new Bitmap(ClientSize.Width, ClientSize.Height);
+            using var g = Graphics.FromImage(frameCache);
+
+            var prevOffsetMode = g.PixelOffsetMode;
+            g.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
             RectangleF displayRect = RectangleF.Empty;
             for (int i = 0; i < 2; ++i)
@@ -264,19 +317,14 @@ namespace JK.ImageViewer.Controls
                 var lightColor = Application.IsDarkModeEnabled ? Color.FromArgb(0x44, 0x44, 0x44) : Color.FromArgb(0xC0, 0xC0, 0xC0);
                 var darkColor = Application.IsDarkModeEnabled ? Color.FromArgb(0x11, 0x11, 0x11) : Color.FromArgb(0x80, 0x80, 0x80);
                 using var checkerBrush = new HatchBrush(HatchStyle.LargeCheckerBoard, lightColor, darkColor);
-                e.Graphics.FillRectangle(checkerBrush, displayRect);
+                g.FillRectangle(checkerBrush, displayRect);
             }
 
-            var prevInterpolationMode = e.Graphics.InterpolationMode;
-            e.Graphics.InterpolationMode = _zoomFactor < 1 ? _downsampleMode : _upsampleMode;
-            e.Graphics.DrawImage(_contentImage, displayRect);
-            e.Graphics.InterpolationMode = prevInterpolationMode;
-
-            if (isDragging)
-                e.Graphics.DrawRectangle(Pens.Red, RectFromPoints(dragStart, dragEnd));
-                //ControlPaint.DrawReversibleFrame(RectangleToScreen(RectFromPoints(dragStart, dragEnd)), Color.Black, FrameStyle.Thick);
-
-            e.Graphics.PixelOffsetMode = prevOffsetMode;
+            var prevInterpolationMode = g.InterpolationMode;
+            g.InterpolationMode = _zoomFactor < 1 ? _downsampleMode : _upsampleMode;
+            g.DrawImage(_contentImage, displayRect);
+            g.InterpolationMode = prevInterpolationMode;
+            g.PixelOffsetMode = prevOffsetMode;
         }
     }
 }

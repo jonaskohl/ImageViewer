@@ -51,6 +51,13 @@ namespace JK.ImageViewer
             LoadAndBuildToolbar();
 
             SettingsManager.Instance.SettingChanged += Instance_SettingChanged;
+            LocalizationManager.LanguageChanged += LocalizationManager_LanguageChanged;
+        }
+
+        private void LocalizationManager_LanguageChanged(object? sender, EventArgs e)
+        {
+            LoadAndBuildMenu();
+            LoadAndBuildToolbar();
         }
 
         protected override void OnDpiChanged(DpiChangedEventArgs e)
@@ -65,6 +72,9 @@ namespace JK.ImageViewer
         {
             switch (e.Key)
             {
+                case "Language":
+                    LocalizationManager.LoadLocale(e.NewValue);
+                    break;
                 case "EnableTransparencyGrid":
                     imageViewControl1.ShowCheckerboard = CurrentSettings.EnableTransparencyGrid;
                     break;

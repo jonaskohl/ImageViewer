@@ -1,6 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<Language>
-    <String Key="_LanguageName">English (US)</String>
+<Language Name="English (US)">
     <String Key="Menu.File">&amp;File</String>
     <String Key="Menu.View">&amp;View</String>
     <String Key="Menu.View/Zoom">&amp;Zoom</String>
