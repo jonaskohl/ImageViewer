@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Toolbar>
     <Command Command="OpenFile" />
+    <Command Command="SaveFile" />
     <Separator />
     <Command Command="ZoomOut" />
     <Command Command="ZoomOriginal" />
@@ -9,4 +10,12 @@
     <Separator />
     <Command Command="FolderImagePrevious" />
     <Command Command="FolderImageNext" />
+    <Separator />
+    <Tool Tool="Default" />
+    <Tool Tool="Zoom" />
+    <Tool Tool="Crop" />
+    <Tool Tool="Rectangle" />
+    <Tool Tool="Ellipse" />
+    <Tool Tool="Line" />
+    <ColorPicker />
 </Toolbar>

@@ -78,5 +78,12 @@ namespace JK.ImageViewer
             using var diag = new SettingsForm();
             diag.ShowDialog(this);
         }
+
+        [WindowCommand]
+        public void Command_SaveFile()
+        {
+            // TODO
+            SetUnsaved(false);
+        }
     }
 }

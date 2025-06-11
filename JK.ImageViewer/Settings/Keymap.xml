@@ -38,4 +38,27 @@
         <Ctrl />
         <Key Which="Oemcomma" />
     </Shortcut>
+    <Shortcut Command="SaveFile">
+        <Ctrl />
+        <Key Which="S" />
+    </Shortcut>
+    <Shortcut Tool="Default">
+        <Key Which="V" />
+    </Shortcut>
+    <Shortcut Tool="Crop">
+        <Key Which="C" />
+    </Shortcut>
+    <Shortcut Tool="Zoom">
+        <Key Which="Z" />
+    </Shortcut>
+    <Shortcut Tool="Rectangle">
+        <Key Which="R" />
+    </Shortcut>
+    <Shortcut Tool="Ellipse">
+        <Shift />
+        <Key Which="R" />
+    </Shortcut>
+    <Shortcut Tool="Line">
+        <Key Which="L" />
+    </Shortcut>
 </Keymap>

@@ -2,6 +2,7 @@
 <MenuRoot>
     <Menu Key="File">
         <Command Command="OpenFile" />
+        <Command Command="SaveFile" />
         <Separator />
         <Command Command="FolderImagePrevious" />
         <Command Command="FolderImageNext" />

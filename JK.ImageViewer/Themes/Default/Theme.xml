@@ -68,6 +68,62 @@
                 <Image Source="images\2x\gearwheel.png" />
             </IfScaling>
         </Icon>
+        <Icon Key="Command.SaveFile">
+            <IfScaling Factor="1">
+                <Image Source="images\1x\floppy_disk.png" />
+            </IfScaling>
+            <IfScaling Factor="2">
+                <Image Source="images\2x\floppy_disk.png" />
+            </IfScaling>
+        </Icon>
+        <Icon Key="Tool.Default">
+            <IfScaling Factor="1">
+                <Image Source="images\1x\mouse_pointer.png" />
+            </IfScaling>
+            <IfScaling Factor="2">
+                <Image Source="images\2x\mouse_pointer.png" />
+            </IfScaling>
+        </Icon>
+        <Icon Key="Tool.Crop">
+            <IfScaling Factor="1">
+                <Image Source="images\1x\crop.png" />
+            </IfScaling>
+            <IfScaling Factor="2">
+                <Image Source="images\2x\crop.png" />
+            </IfScaling>
+        </Icon>
+        <Icon Key="Tool.Zoom">
+            <IfScaling Factor="1">
+                <Image Source="images\1x\magnifying_glass.png" />
+            </IfScaling>
+            <IfScaling Factor="2">
+                <Image Source="images\2x\magnifying_glass.png" />
+            </IfScaling>
+        </Icon>
+        <Icon Key="Tool.Rectangle">
+            <IfScaling Factor="1">
+                <Image Source="images\1x\shape_rectangle.png" />
+            </IfScaling>
+            <IfScaling Factor="2">
+                <Image Source="images\2x\shape_rectangle.png" />
+            </IfScaling>
+        </Icon>
+        <Icon Key="Tool.Ellipse">
+            <IfScaling Factor="1">
+                <Image Source="images\1x\shape_ellipse.png" />
+            </IfScaling>
+            <IfScaling Factor="2">
+                <Image Source="images\2x\shape_ellipse.png" />
+            </IfScaling>
+        </Icon>
+        <Icon Key="Tool.Line">
+            <IfScaling Factor="1">
+                <Image Source="images\1x\vector_line.png" />
+            </IfScaling>
+            <IfScaling Factor="2">
+                <Image Source="images\2x\vector_line.png" />
+            </IfScaling>
+        </Icon>
         <Icon Key="SettingsCategory.General">
             <IfScaling Factor="1">
                 <Image Source="images\1x\tools.png" />

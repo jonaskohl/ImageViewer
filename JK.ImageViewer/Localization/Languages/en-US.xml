@@ -4,6 +4,7 @@
     <String Key="Menu.View">&amp;View</String>
     <String Key="Menu.View/Zoom">&amp;Zoom</String>
     <String Key="Command.OpenFile">&amp;Open...</String>
+    <String Key="Command.SaveFile">&amp;Save</String>
     <String Key="Command.FolderImagePrevious">&amp;Previous image in folder</String>
     <String Key="Command.FolderImageNext">&amp;Next image in folder</String>
     <String Key="Command.ShowSettings">&amp;Settings...</String>
@@ -13,13 +14,28 @@
     <String Key="Command.ZoomOut">Zoom &amp;out</String>
     <String Key="Command.ZoomOriginal">&amp;Reset zoom</String>
     <String Key="Command.ZoomToFit">Zoom to &amp;fit</String>
+    <String Key="Tool.Default">Default</String>
+    <String Key="Tool.Zoom">Zoom to selection</String>
+    <String Key="Tool.Crop">Crop image</String>
+    <String Key="Tool.Rectangle">Draw rectangle</String>
+    <String Key="Tool.Ellipse">Draw ellipse</String>
+    <String Key="Tool.Line">Draw line</String>
     <String Key="SettingsCategory.General">General</String>
     <String Key="SettingsCategory.Appearance">Appearance</String>
     <String Key="Global.Buttons.GenericOkay">&amp;OK</String>
     <String Key="Global.Buttons.GenericCancel">&amp;Cancel</String>
     <String Key="Global.Buttons.GenericApply">&amp;Apply</String>
     <String Key="Global.DialogTitles.Settings">Settings</String>
+    <String Key="Dialogs.UnsavedChanges.Title">Unsaved Changes</String>
+    <String Key="Dialogs.UnsavedChanges.Message">Do you want to save changes made to &#8220;{0}&#8221;?</String>
+    <String Key="Dialogs.UnsavedChanges.Buttons.Save.Label">Save</String>
+    <String Key="Dialogs.UnsavedChanges.Buttons.Save.Description">Overwrites the image with the new changes</String>
+    <String Key="Dialogs.UnsavedChanges.Buttons.Discard.Label">Discard</String>
+    <String Key="Dialogs.UnsavedChanges.Buttons.Discard.Description">Discards all changes made to the image, keeping the original intact</String>
+    <String Key="Dialogs.UnsavedChanges.Buttons.Cancel.Label">Cancel</String>
+    <String Key="Dialogs.UnsavedChanges.Buttons.Cancel.Description">Cancels the operation and keeps everything as-is</String>
     <String Key="Setting.Language">Language</String>
     <String Key="Setting.Theme">Theme</String>
     <String Key="Setting.EnableTransparencyGrid">Enable transparency grid</String>
+    <String Key="Misc.ColorPicker.OtherLabel">Other...</String>
 </Language>

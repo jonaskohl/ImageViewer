@@ -1,20 +1,53 @@
-﻿using System;
+﻿using ImageMagick;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.ComponentModel;
-using System.Drawing.Drawing2D;
-using ImageMagick;
 using System.Windows.Forms.VisualStyles;
 
 namespace JK.ImageViewer.Controls
 {
     internal class ImageViewControl : ScrollableControl
     {
+        public enum ToolMode
+        {
+            None,
+            Marquee,
+            Line,
+        }
+
+        const int LAYOUT_ITERATIONS = 2;
+
         private Bitmap? frameCache = null;
 
         public event EventHandler? ZoomFactorChanged;
+        public event EventHandler<Rectangle>? MarqueeSelectionCreated;
+        public event EventHandler<(Point From, Point To)>? LineCreated;
+
+        private ToolMode _currentToolMode = ToolMode.None;
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public ToolMode CurrentToolMode
+        {
+            get => _currentToolMode;
+            set
+            {
+                _currentToolMode = value;
+                UpdateCursor();
+            }
+        }
+
+        private bool _reverseWheel = false;
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public bool ReverseWheel
+        {
+            get => _reverseWheel;
+            set => _reverseWheel = value;
+        }
 
         private float _zoomFactor = 1.0f;
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -23,7 +56,7 @@ namespace JK.ImageViewer.Controls
             get => _zoomFactor;
             set
             {
-                _zoomFactor = value;
+                _zoomFactor = MathUtil.Clamp(Constants.ZOOM_FACTOR_MIN, value, Constants.ZOOM_FACTOR_MAX);
                 ZoomFactorChanged?.Invoke(this, EventArgs.Empty);
                 InvalidateFrameCache();
             }
@@ -49,6 +82,7 @@ namespace JK.ImageViewer.Controls
             set
             {
                 _contentImage = value;
+                UpdateCursor();
                 InvalidateFrameCache();
             }
         }
@@ -61,6 +95,7 @@ namespace JK.ImageViewer.Controls
             set
             {
                 _imageLoadException = value;
+                UpdateCursor();
                 Repaint();
             }
         }
@@ -99,22 +134,63 @@ namespace JK.ImageViewer.Controls
             , true);
         }
 
+        private void UpdateCursor()
+        {
+            if (ContentImage is null || ImageLoadException is not null)
+            {
+                Cursor = Cursors.Arrow;
+                return;
+            }
+
+            switch (_currentToolMode)
+            {
+                case ToolMode.Marquee:
+                case ToolMode.Line:
+                    Cursor = Cursors.Cross;
+                    break;
+                case ToolMode.None:
+                default:
+                    Cursor = Cursors.Arrow;
+                    break;
+            }
+        }
+
         protected override void OnMouseWheel(MouseEventArgs e)
         {
+            if (_reverseWheel)
+                e = new MouseEventArgs(e.Button, e.Clicks, e.X, e.Y, -e.Delta);
+
+            var oldZoomFactor = ZoomFactor;
+            var oldScrollPosX = AutoScrollPosition.X;
+            var oldScrollPosY = AutoScrollPosition.Y;
             if (ModifierKeys == Keys.Control)
             {
                 var add = (e.Delta / 1440f) * ZoomFactor;
                 ZoomFactor = MathUtil.Clamp(Constants.ZOOM_FACTOR_MIN, ZoomFactor + add, Constants.ZOOM_FACTOR_MAX);
             }
+            else if (ModifierKeys == Keys.Shift)
+            {
+                var vscroll = VScroll;
+                VScroll = false;
+                base.OnMouseWheel(e);
+                VScroll = vscroll;
+            }
             else
                 base.OnMouseWheel(e);
+
+            if (oldZoomFactor != ZoomFactor || oldScrollPosX != AutoScrollPosition.X || oldScrollPosY != AutoScrollPosition.Y)
+            {
+                InvalidateFrameCache();
+            }
         }
 
         protected override void OnScroll(ScrollEventArgs se)
         {
             base.OnScroll(se);
             if (se.OldValue != se.NewValue)
-                Repaint();
+            {
+                InvalidateFrameCache();
+            }
         }
 
         private void Repaint()
@@ -132,11 +208,13 @@ namespace JK.ImageViewer.Controls
         Point dragStart;
         Point dragEnd;
 
+        protected bool CanDrag => CurrentToolMode != ToolMode.None && ModifierKeys == Keys.None && ContentImage is not null;
+
         protected override void OnMouseDown(MouseEventArgs e)
         {
             base.OnMouseDown(e);
 
-            if (e.Button == MouseButtons.Right && ModifierKeys == Keys.Shift && ContentImage is not null)
+            if (e.Button == MouseButtons.Left && CanDrag)
             {
                 isDragging = true;
                 dragStart = e.Location;
@@ -152,8 +230,28 @@ namespace JK.ImageViewer.Controls
             var left = Math.Min(a.X, b.X);
             var right = Math.Max(a.X, b.X);
 
+            var isRightAnchored = b.X < a.X;
+            var isBottomAnchored = b.Y < a.Y;
+
             var w = right - left;
             var h = bottom - top;
+
+            if (ModifierKeys == Keys.Shift)
+            {
+                var s = Math.Min(w, h);
+
+                var xOffs = isRightAnchored
+                    ? (w - s)
+                    : 0;
+                var yOffs = isBottomAnchored
+                    ? (h - s)
+                    : 0;
+
+                w = h = s;
+                left += xOffs;
+                top += yOffs;
+            }
+
             return new Rectangle(left, top, w, h);
         }
 
@@ -172,10 +270,25 @@ namespace JK.ImageViewer.Controls
         {
             base.OnMouseUp(e);
 
-            if (e.Button == MouseButtons.Right && isDragging)
+            if (e.Button == MouseButtons.Left && isDragging)
             {
                 isDragging = false;
-                SetZoomRegion(dragStart, dragEnd);
+                if (!dragStart.Equals(dragEnd))
+                {
+                    switch (CurrentToolMode)
+                    {
+                        case ToolMode.Marquee:
+                            MarqueeSelectionCreated?.Invoke(this, RectangleToImage(RectFromPoints(dragStart, dragEnd)));
+                            break;
+                        case ToolMode.Line:
+                            LineCreated?.Invoke(this, (PointToImage(dragStart), PointToImage(dragEnd)));
+                            break;
+                        case ToolMode.None:
+                        default:
+                            break;
+                    }
+                }
+                Repaint();
             }
         }
 
@@ -184,12 +297,10 @@ namespace JK.ImageViewer.Controls
             SetZoomRegion(RectFromPoints(topLeft, bottomRight));
         }
 
-        public void SetZoomRegion(Rectangle region)
+        public void SetZoomRegion(Rectangle regionInImageSpace)
         {
             if (ContentImage is null)
                 return;
-
-            var regionInImageSpace = RectangleToImage(region);
 
             var factor = Math.Min(
                 (float)ContentImage.Width / Math.Max(1, regionInImageSpace.Width),
@@ -202,15 +313,54 @@ namespace JK.ImageViewer.Controls
             );
 
             ZoomFactor = factor;
+            InvalidateFrameCache();
+            Application.DoEvents();
+            PerformLayout(this, nameof(AutoScrollMinSize));
             AutoScrollPosition = newOffset;
-            Repaint();
+            InvalidateFrameCache();
+        }
+
+        private Point PointToImage(Point pt)
+        {
+            if (ContentImage is null)
+                return Point.Empty;
+
+            var innerWidth = ClientSize.Width;
+            var innerHeight = ClientSize.Height;
+
+            var displayImageWidth = ContentImage.Width * ZoomFactor;
+            var displayImageHeight = ContentImage.Height * ZoomFactor;
+            var hOverflow = displayImageWidth - innerWidth;
+            var vOverflow = displayImageHeight - innerHeight;
+
+            var posX = Math.Max(0, (innerWidth - displayImageWidth) / 2f) + AutoScrollPosition.X;
+            var posY = Math.Max(0, (innerHeight - displayImageHeight) / 2f) + AutoScrollPosition.Y;
+
+            return new Point(
+                (int)((pt.X - posX) / ZoomFactor),
+                (int)((pt.Y - posY) / ZoomFactor)
+            );
         }
 
         private Rectangle RectangleToImage(Rectangle region)
         {
+            if (ContentImage is null)
+                return Rectangle.Empty;
+
+            var innerWidth = ClientSize.Width;
+            var innerHeight = ClientSize.Height;
+
+            var displayImageWidth = ContentImage.Width * ZoomFactor;
+            var displayImageHeight = ContentImage.Height * ZoomFactor;
+            var hOverflow = displayImageWidth - innerWidth;
+            var vOverflow = displayImageHeight - innerHeight;
+
+            var posX = Math.Max(0, (innerWidth - displayImageWidth) / 2f) + AutoScrollPosition.X;
+            var posY = Math.Max(0, (innerHeight - displayImageHeight) / 2f) + AutoScrollPosition.Y;
+
             return new Rectangle(
-                (int)((region.X + AutoScrollPosition.X) / ZoomFactor),
-                (int)((region.Y + AutoScrollPosition.Y) / ZoomFactor),
+                (int)((region.X - posX) / ZoomFactor),
+                (int)((region.Y - posY) / ZoomFactor),
                 (int)(region.Width / ZoomFactor),
                 (int)(region.Height / ZoomFactor)
             );
@@ -243,17 +393,25 @@ namespace JK.ImageViewer.Controls
                 return;
             }
 
-            if (_contentImage is null)
+            if (ContentImage is null)
             {
                 AutoScrollMinSize = Size.Empty;
                 return;
             }
 
-            if (frameCache is null)
+            int maxTries = 0xFF;
+
+            while (frameCache is null && (maxTries--) >= 0)
+            {
+                Debug.WriteLine($"No frame cache: Recreating {maxTries + 1}");
                 RecreateFrameCache();
+            }
 
             if (frameCache is null)
+            {
+                Debug.WriteLine("Still no frame cache; aborting rest of paint operation");
                 return;
+            }
 
             e.Graphics.DrawImageUnscaled(frameCache, Point.Empty);
 
@@ -266,8 +424,18 @@ namespace JK.ImageViewer.Controls
                 {
                     DashStyle = DashStyle.Dot,
                 };
-                e.Graphics.DrawRectangle(Pens.White, RectFromPoints(dragStart, dragEnd));
-                e.Graphics.DrawRectangle(pen, RectFromPoints(dragStart, dragEnd));
+
+                if (CurrentToolMode == ToolMode.Marquee)
+                {
+                    var rect = RectFromPoints(dragStart, dragEnd);
+                    e.Graphics.DrawRectangle(Pens.White, rect);
+                    e.Graphics.DrawRectangle(pen, rect);
+                }
+                else if (CurrentToolMode == ToolMode.Line)
+                {
+                    e.Graphics.DrawLine(Pens.White, dragStart, dragEnd);
+                    e.Graphics.DrawLine(pen, dragStart, dragEnd);
+                }
 
                 e.Graphics.PixelOffsetMode = prevOffsetMode;
             }
@@ -275,29 +443,56 @@ namespace JK.ImageViewer.Controls
 
         private void InvalidateFrameCache()
         {
+            frameCache?.Dispose();
             frameCache = null;
             Repaint();
         }
 
         private void RecreateFrameCache()
         {
-            if (_contentImage is null || _imageLoadException is not null)
+            if (ContentImage is null)
+            {
+                Debug.WriteLine("Not recreating frame cache: No content image");
                 return;
+            }
 
+            if (_imageLoadException is not null)
+            {
+                Debug.WriteLine("Not recreating frame cache: In exception state");
+                return;
+            }
+
+            if (frameCache is not null)
+            {
+                Debug.WriteLine("Not recreating frame cache: Frame cache still valid");
+                return;
+            }
+
+            frameCache?.Dispose();
             frameCache = new Bitmap(ClientSize.Width, ClientSize.Height);
-            using var g = Graphics.FromImage(frameCache);
+
+            if (frameCache is null)
+            {
+                Debug.WriteLine("Frame cache is null directly after creation!!!");
+            }
+            else
+            {
+                Debug.WriteLine("Frame cache object created");
+            }
+
+            using var g = Graphics.FromImage(frameCache!);
 
             var prevOffsetMode = g.PixelOffsetMode;
             g.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
             RectangleF displayRect = RectangleF.Empty;
-            for (int i = 0; i < 2; ++i)
+            for (int i = 0; i < LAYOUT_ITERATIONS; ++i)
             {
                 var innerWidth = ClientSize.Width;
                 var innerHeight = ClientSize.Height;
 
-                var displayImageWidth = _contentImage.Width * _zoomFactor;
-                var displayImageHeight = _contentImage.Height * _zoomFactor;
+                var displayImageWidth = ContentImage.Width * _zoomFactor;
+                var displayImageHeight = ContentImage.Height * _zoomFactor;
                 var hOverflow = displayImageWidth - innerWidth;
                 var vOverflow = displayImageHeight - innerHeight;
 
@@ -322,9 +517,20 @@ namespace JK.ImageViewer.Controls
 
             var prevInterpolationMode = g.InterpolationMode;
             g.InterpolationMode = _zoomFactor < 1 ? _downsampleMode : _upsampleMode;
-            g.DrawImage(_contentImage, displayRect);
+            g.DrawImage(ContentImage, displayRect);
             g.InterpolationMode = prevInterpolationMode;
             g.PixelOffsetMode = prevOffsetMode;
+        }
+
+        public float GetBestFitZoomFactor()
+        {
+            if (ContentImage is null)
+                return 1f;
+
+            return Math.Min(
+                Width / (float)ContentImage.Width,
+                Height / (float)ContentImage.Height
+            );
         }
     }
 }

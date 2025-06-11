@@ -4,6 +4,7 @@
     <String Key="Menu.View">&amp;Ansicht</String>
     <String Key="Menu.View/Zoom">&amp;Zoom</String>
     <String Key="Command.OpenFile">&amp;Öffnen...</String>
+    <String Key="Command.SaveFile">&amp;Speichern...</String>
     <String Key="Command.FolderImagePrevious">&amp;Vorheriges Bild in Ordner</String>
     <String Key="Command.FolderImageNext">&amp;Nächstes Bild in Ordner</String>
     <String Key="Command.ShowSettings">Ein&amp;stellungen...</String>
@@ -13,13 +14,28 @@
     <String Key="Command.ZoomOut">Hinausz&amp;oomen</String>
     <String Key="Command.ZoomOriginal">Zoom zu&amp;rücksetzen</String>
     <String Key="Command.ZoomToFit">&amp;Einpassen</String>
+    <String Key="Tool.Default">Standard</String>
+    <String Key="Tool.Zoom">Zu Auswahl zoomen</String>
+    <String Key="Tool.Crop">Bild zuschneiden</String>
+    <String Key="Tool.Rectangle">Rechteck zeichnen</String>
+    <String Key="Tool.Ellipse">Ellipse zeichnen</String>
+    <String Key="Tool.Line">Linie zeichnen</String>
     <String Key="SettingsCategory.General">Allgemein</String>
     <String Key="SettingsCategory.Appearance">Erscheinungsbild</String>
     <String Key="Global.Buttons.GenericOkay">&amp;OK</String>
     <String Key="Global.Buttons.GenericCancel">&amp;Abbrechen</String>
     <String Key="Global.Buttons.GenericApply">An&amp;wenden</String>
     <String Key="Global.DialogTitles.Settings">Einstellungen</String>
+    <String Key="Dialogs.UnsavedChanges.Title">Ungesicherte Änderungen</String>
+    <String Key="Dialogs.UnsavedChanges.Message">Möchten Sie die Änderungen an &#8222;{0}&#8220; speichern?</String>
+    <String Key="Dialogs.UnsavedChanges.Buttons.Save.Label">Speichern</String>
+    <String Key="Dialogs.UnsavedChanges.Buttons.Save.Description">Überschreibt das Bild mit den neuen Änderungen</String>
+    <String Key="Dialogs.UnsavedChanges.Buttons.Discard.Label">Verwerfen</String>
+    <String Key="Dialogs.UnsavedChanges.Buttons.Discard.Description">Alle Änderungen werden verworfen und das Originalbild bleibt unverändert</String>
+    <String Key="Dialogs.UnsavedChanges.Buttons.Cancel.Label">Abbrechen</String>
+    <String Key="Dialogs.UnsavedChanges.Buttons.Cancel.Description">Bricht den Vorgang ab und lässt alles unverändert</String>
     <String Key="Setting.Language">Sprache</String>
     <String Key="Setting.Theme">Erscheinungsbild</String>
     <String Key="Setting.EnableTransparencyGrid">Transparenzraster aktivieren</String>
+    <String Key="Misc.ColorPicker.OtherLabel">Andere...</String>
 </Language>

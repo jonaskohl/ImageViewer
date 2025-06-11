@@ -1,6 +1,7 @@
 ﻿using ImageMagick;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,6 +10,12 @@ namespace JK.ImageViewer
 {
     public partial class MainForm
     {
+        private void SetUnsaved(bool unsaved)
+        {
+            isUnsaved = unsaved;
+            SetCommandEnabled("SaveFile", unsaved);
+        }
+
         private string? GetCurrentFolderPath()
         {
             if (currentPath is null)
@@ -40,42 +47,166 @@ namespace JK.ImageViewer
             Cursor.Position = Cursor.Position;
             Application.DoEvents();
 
-            ClearImage();
             try
             {
+                if (!ClearImage())
+                    return;
+
                 using var magickImage = new MagickImage(path);
 
                 imageViewControl1.ContentImage = magickImage.ToBitmap();
 
                 UpdateZoomText();
+
+                SetCommandEnabled("ZoomIn", true);
+                SetCommandEnabled("ZoomOut", true);
+                SetCommandEnabled("ZoomOriginal", true);
+                SetCommandEnabled("ZoomToFit", true);
+                SetCommandEnabled("CloseImage", true);
+                SetCommandEnabled("FolderImagePrevious", true);
+                SetCommandEnabled("FolderImageNext", true);
+                SetToolEnabled(EditorTool.Default, true);
+                SetToolEnabled(EditorTool.Zoom, true);
+                SetToolEnabled(EditorTool.Crop, true);
+                SetToolEnabled(EditorTool.Rectangle, true);
+                SetToolEnabled(EditorTool.Ellipse, true);
+                SetToolEnabled(EditorTool.Line, true);
+                SetEnabled(zoomInput, true);
+                SetEnabled(colorPicker, true);
+
+                Text = Path.GetFileName(path) + " - " + baseTitle;
+                currentPath = path;
             }
             catch (MagickDelegateErrorException ex)
             {
                 imageViewControl1.ImageLoadException = ex;
             }
-
-            Text = Path.GetFileName(path) + " - " + baseTitle;
-            currentPath = path;
-
-            Application.DoEvents();
-            Application.UseWaitCursor = false;
-            Cursor.Position = Cursor.Position;
+            finally
+            {
+                Application.DoEvents();
+                Application.UseWaitCursor = false;
+                Cursor.Position = Cursor.Position;
+            }
         }
 
-        private void ClearImage(bool clearFolderPosition = false)
+        private void ReplaceCurrentImage(Image? image)
         {
             imageViewControl1.ImageLoadException = null;
             imageViewControl1.ContentImage?.Dispose();
-            imageViewControl1.ContentImage = null!;
+            imageViewControl1.ContentImage = image;
+        }
+
+        private bool ClearImage(bool clearFolderPosition = false)
+        {
+            if (isUnsaved)
+            {
+                var saveButton = new TaskDialogCommandLinkButton()
+                {
+                    Text = this._("Dialogs.UnsavedChanges.Buttons.Save.Label"),
+                    DescriptionText = this._("Dialogs.UnsavedChanges.Buttons.Save.Description"),
+                };
+                var discardButton = new TaskDialogCommandLinkButton()
+                {
+                    Text = this._("Dialogs.UnsavedChanges.Buttons.Discard.Label"),
+                    DescriptionText = this._("Dialogs.UnsavedChanges.Buttons.Discard.Description"),
+                };
+                var cancelButton = new TaskDialogCommandLinkButton()
+                {
+                    Text = this._("Dialogs.UnsavedChanges.Buttons.Cancel.Label"),
+                    DescriptionText = this._("Dialogs.UnsavedChanges.Buttons.Cancel.Description"),
+                };
+
+                var result = TaskDialog.ShowDialog(Handle, new TaskDialogPage()
+                {
+                    AllowCancel = true,
+                    AllowMinimize = false,
+                    Icon = TaskDialogIcon.Warning,
+                    Buttons =
+                    {
+                        saveButton,
+                        discardButton,
+                        cancelButton,
+                    },
+                    Caption = this._("Dialogs.UnsavedChanges.Title"),
+                    Heading = this._("Dialogs.UnsavedChanges.Title"),
+                    Text = string.Format(this._("Dialogs.UnsavedChanges.Message"), Path.GetFileName(currentPath)),
+                });
+                if (result == saveButton)
+                {
+                    Command_SaveFile();
+                }
+                else if (result == cancelButton || result == TaskDialogButton.Cancel)
+                {
+                    return false;
+                }
+            }
+
+            ReplaceCurrentImage(null);
             Text = baseTitle;
             currentPath = null;
+            SetUnsaved(false);
             UpdateZoomText();
+
+            SetCommandEnabled("SaveFile", false);
+            SetCommandEnabled("ZoomIn", false);
+            SetCommandEnabled("ZoomOut", false);
+            SetCommandEnabled("ZoomOriginal", false);
+            SetCommandEnabled("ZoomToFit", false);
+            SetCommandEnabled("CloseImage", false);
+            SetToolEnabled(EditorTool.Default, false);
+            SetToolEnabled(EditorTool.Zoom, false);
+            SetToolEnabled(EditorTool.Crop, false);
+            SetToolEnabled(EditorTool.Rectangle, false);
+            SetToolEnabled(EditorTool.Ellipse, false);
+            SetToolEnabled(EditorTool.Line, false);
+            SetEnabled(zoomInput, false);
+            SetEnabled(colorPicker, false);
 
             if (clearFolderPosition)
             {
                 folderIndex = -1;
                 folderFiles = null;
+
+                SetCommandEnabled("FolderImagePrevious", false);
+                SetCommandEnabled("FolderImageNext", false);
             }
+
+            return true;
+        }
+
+        public void SetEnabled(ToolStripItem? control, bool enabled)
+        {
+            if (control is null)
+                return;
+
+            control.Enabled = enabled;
+        }
+
+        public void SetEnabled(Control? control, bool enabled)
+        {
+            if (control is null)
+                return;
+
+            control.Enabled = enabled;
+        }
+
+        private void SetCommandEnabled(string commandName, bool isEnabled)
+        {
+            if (commandButtons.TryGetValue(commandName, out var button))
+                button.Enabled = isEnabled;
+
+            if (commandMenuItems.TryGetValue(commandName, out var item))
+                item.Enabled = isEnabled;
+
+            commandEnabledState[commandName] = isEnabled;
+        }
+
+        private void SetToolEnabled(EditorTool tool, bool isEnabled)
+        {
+            if (toolButtons.TryGetValue(tool, out var button))
+                button.Enabled = isEnabled;
+
+            toolEnabledState[tool] = isEnabled;
         }
 
         private bool TryFetchFolder()
@@ -102,13 +233,7 @@ namespace JK.ImageViewer
 
         private float GetBestFitZoomFactor()
         {
-            if (imageViewControl1.ContentImage is null)
-                return 1f;
-
-            return Math.Min(
-                imageViewControl1.ClientSize.Width / (float)imageViewControl1.ContentImage.Width,
-                imageViewControl1.ClientSize.Height / (float)imageViewControl1.ContentImage.Height
-            );
+            return imageViewControl1.GetBestFitZoomFactor();
         }
 
         private void UpdateZoomText()
