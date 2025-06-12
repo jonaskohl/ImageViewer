@@ -40,7 +40,7 @@ namespace JK.ImageViewer
                 .Any(format => format.SupportsReading && format.Format.ToString().Equals(ext, StringComparison.OrdinalIgnoreCase));
         }
 
-        public void LoadImage(string path)
+        public void LoadImage(string path, string[]? folderFiles = null)
         {
             Application.UseWaitCursor = true;
             Application.DoEvents();
@@ -49,14 +49,20 @@ namespace JK.ImageViewer
 
             try
             {
-                if (!ClearImage(true))
+                if (!ClearImage(folderFiles is null))
                     return;
 
                 try
                 {
-                    using var magickImage = new MagickImage(path);
+                    using var magickImage = new MagickImage();
+                    magickImage.BackgroundColor = MagickColors.Transparent;
+                    magickImage.Read(path);
 
                     imageViewControl1.ContentImage = magickImage.ToBitmap();
+
+                    this.folderFiles = folderFiles;
+                    if (folderFiles is not null)
+                        folderIndex = Array.IndexOf(folderFiles, path);
                 } catch (Exception ex)
                 {
                     imageViewControl1.ImageLoadException = ex;

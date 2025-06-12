@@ -13,7 +13,10 @@ namespace JK.ImageViewer
         public void Command_OpenFile()
         {
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
-                LoadImage(openFileDialog1.FileName);
+                if (openFileDialog1.FileNames.Length == 1)
+                    LoadImage(openFileDialog1.FileName);
+                else
+                    LoadImage(openFileDialog1.FileName, openFileDialog1.FileNames);
         }
 
         [WindowCommand]
@@ -41,7 +44,7 @@ namespace JK.ImageViewer
                 return;
 
             folderIndex = (folderIndex - 1 + folderFiles!.Length) % folderFiles.Length;
-            LoadImage(folderFiles[folderIndex]);
+            LoadImage(folderFiles[folderIndex], folderFiles);
         }
 
         [WindowCommand]
@@ -51,7 +54,7 @@ namespace JK.ImageViewer
                 return;
 
             folderIndex = (folderIndex + 1) % folderFiles!.Length;
-            LoadImage(folderFiles[folderIndex]);
+            LoadImage(folderFiles[folderIndex], folderFiles);
         }
 
         [WindowCommand]

@@ -87,6 +87,10 @@ namespace JK.ImageViewer
             imageViewControl1.UpsampleMode = CurrentSettings.ImageUpsampleMode;
             imageViewControl1.DownsampleMode = CurrentSettings.ImageDownsampleMode;
 
+            imageViewControl1.AllowDrop = true;
+            imageViewControl1.DragEnter += ImageViewControl1_DragEnter;
+            imageViewControl1.DragDrop += ImageViewControl1_DragDrop;
+
             imageViewControl1.MarqueeSelectionCreated += ImageViewControl1_MarqueeSelectionCreated;
             imageViewControl1.LineCreated += ImageViewControl1_LineCreated;
 
@@ -102,6 +106,7 @@ namespace JK.ImageViewer
                     .ToArray()
                 ) + "|All files|*.*";
             openFileDialog1.Filter = filter;
+            openFileDialog1.Multiselect = true;
 
             currentKeymap = ApplicationKeymap.LoadFromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Settings", "Keymap.xml"));
             LoadAndBuildMenu();
@@ -111,6 +116,31 @@ namespace JK.ImageViewer
             LocalizationManager.LanguageChanged += LocalizationManager_LanguageChanged;
 
             ClearImage(true);
+        }
+
+        private void ImageViewControl1_DragEnter(object? sender, DragEventArgs e)
+        {
+            if (e.Data?.GetDataPresent(DataFormats.FileDrop) ?? false)
+            {
+                e.Effect = DragDropEffects.Copy;
+            }
+            else
+            {
+                e.Effect = DragDropEffects.None;
+            }
+        }
+
+        private void ImageViewControl1_DragDrop(object? sender, DragEventArgs e)
+        {
+            if (e.Data is null)
+                return;
+
+            string[] files = (string[])e.Data!.GetData(DataFormats.FileDrop)!;
+
+            if (files.Length == 1)
+                LoadImage(files[0]);
+            else
+                LoadImage(files[0], files);
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
@@ -423,7 +453,7 @@ namespace JK.ImageViewer
                             var item = new ToolStripNumericUpDown()
                             {
                                 AutoSize = false,
-                                Width = 80,
+                                Width = LogicalToDeviceUnits(80),
                                 Minimum = (decimal)Constants.ZOOM_FACTOR_MIN * 100m,
                                 Maximum = (decimal)Constants.ZOOM_FACTOR_MAX * 100m,
                                 DecimalPlaces = 2,

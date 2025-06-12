@@ -360,8 +360,6 @@ namespace JK.ImageViewer.Controls
 
             var displayImageWidth = ContentImage.Width * ZoomFactor;
             var displayImageHeight = ContentImage.Height * ZoomFactor;
-            var hOverflow = displayImageWidth - innerWidth;
-            var vOverflow = displayImageHeight - innerHeight;
 
             var posX = Math.Max(0, (innerWidth - displayImageWidth) / 2f) + AutoScrollPosition.X;
             var posY = Math.Max(0, (innerHeight - displayImageHeight) / 2f) + AutoScrollPosition.Y;

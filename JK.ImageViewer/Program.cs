@@ -20,8 +20,10 @@ namespace JK.ImageViewer
             Application.SetColorMode(SettingsManager.Instance.GetPreference("ForceColorTheme", ThemeManager.CurrentTheme.ThemeColorMode));
             ToolStripManager.RenderMode = ToolStripManagerRenderMode.Professional;
             var form = new MainForm();
+            if (CurrentSettings.StartMaximized)
+                form.WindowState = FormWindowState.Maximized;
             if (args.Length > 0)
-                form.LoadImage(args[0]);
+                form.LoadImage(args[0], args.Length == 1 ? null : args.Where(a => !a.StartsWith("/") && !a.StartsWith("-")).ToArray());
             Application.Run(form);
             SettingsManager.Instance.Save();
         }

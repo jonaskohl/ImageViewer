@@ -28,11 +28,11 @@
     <String Key="Global.DialogTitles.Settings">Einstellungen</String>
     <String Key="Dialogs.UnsavedChanges.Title">Ungesicherte Änderungen</String>
     <String Key="Dialogs.UnsavedChanges.Message">Möchten Sie die Änderungen an &#8222;{0}&#8220; speichern?</String>
-    <String Key="Dialogs.UnsavedChanges.Buttons.Save.Label">Speichern</String>
+    <String Key="Dialogs.UnsavedChanges.Buttons.Save.Label">&amp;Speichern</String>
     <String Key="Dialogs.UnsavedChanges.Buttons.Save.Description">Überschreibt das Bild mit den neuen Änderungen</String>
-    <String Key="Dialogs.UnsavedChanges.Buttons.Discard.Label">Verwerfen</String>
+    <String Key="Dialogs.UnsavedChanges.Buttons.Discard.Label">&amp;Verwerfen</String>
     <String Key="Dialogs.UnsavedChanges.Buttons.Discard.Description">Alle Änderungen werden verworfen und das Originalbild bleibt unverändert</String>
-    <String Key="Dialogs.UnsavedChanges.Buttons.Cancel.Label">Abbrechen</String>
+    <String Key="Dialogs.UnsavedChanges.Buttons.Cancel.Label">&amp;Abbrechen</String>
     <String Key="Dialogs.UnsavedChanges.Buttons.Cancel.Description">Bricht den Vorgang ab und lässt alles unverändert</String>
     <String Key="Setting.Language">Sprache</String>
     <String Key="Setting.Theme">Erscheinungsbild</String>

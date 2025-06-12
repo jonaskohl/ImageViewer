@@ -14,5 +14,6 @@ namespace JK.ImageViewer
         public static bool EnableTransparencyGrid => SettingsManager.Instance.GetPreference("EnableTransparencyGrid", true);
         public static InterpolationMode ImageUpsampleMode => SettingsManager.Instance.GetPreference("ImageUpsampleMode", InterpolationMode.NearestNeighbor);
         public static InterpolationMode ImageDownsampleMode => SettingsManager.Instance.GetPreference("ImageDownsampleMode", InterpolationMode.HighQualityBicubic);
+        public static bool StartMaximized => SettingsManager.Instance.GetPreference("StartMaximized", false);
     }
 }

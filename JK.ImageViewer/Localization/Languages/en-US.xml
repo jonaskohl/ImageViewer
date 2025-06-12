@@ -28,11 +28,11 @@
     <String Key="Global.DialogTitles.Settings">Settings</String>
     <String Key="Dialogs.UnsavedChanges.Title">Unsaved Changes</String>
     <String Key="Dialogs.UnsavedChanges.Message">Do you want to save changes made to &#8220;{0}&#8221;?</String>
-    <String Key="Dialogs.UnsavedChanges.Buttons.Save.Label">Save</String>
+    <String Key="Dialogs.UnsavedChanges.Buttons.Save.Label">&amp;Save</String>
     <String Key="Dialogs.UnsavedChanges.Buttons.Save.Description">Overwrites the image with the new changes</String>
-    <String Key="Dialogs.UnsavedChanges.Buttons.Discard.Label">Discard</String>
+    <String Key="Dialogs.UnsavedChanges.Buttons.Discard.Label">&amp;Discard</String>
     <String Key="Dialogs.UnsavedChanges.Buttons.Discard.Description">Discards all changes made to the image, keeping the original intact</String>
-    <String Key="Dialogs.UnsavedChanges.Buttons.Cancel.Label">Cancel</String>
+    <String Key="Dialogs.UnsavedChanges.Buttons.Cancel.Label">&amp;Cancel</String>
     <String Key="Dialogs.UnsavedChanges.Buttons.Cancel.Description">Cancels the operation and keeps everything as-is</String>
     <String Key="Setting.Language">Language</String>
     <String Key="Setting.Theme">Theme</String>
