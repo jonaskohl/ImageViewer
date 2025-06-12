@@ -17,7 +17,7 @@ namespace JK.ImageViewer
             SettingsManager.EnsureInstance();
             LocalizationManager.LoadLocale(CurrentSettings.Language);
             ThemeManager.LoadTheme(CurrentSettings.Theme);
-            Application.SetColorMode(ThemeManager.CurrentTheme.ThemeColorMode);
+            Application.SetColorMode(SettingsManager.Instance.GetPreference("ForceColorTheme", ThemeManager.CurrentTheme.ThemeColorMode));
             ToolStripManager.RenderMode = ToolStripManagerRenderMode.Professional;
             var form = new MainForm();
             if (args.Length > 0)

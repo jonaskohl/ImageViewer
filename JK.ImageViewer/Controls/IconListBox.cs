@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
@@ -36,10 +37,17 @@ namespace JK.ImageViewer.Controls
             renderer = new((Application.IsDarkModeEnabled ? "DarkMode_Explorer" : "Explorer") + "::ListView", 1, LISS_NORMAL);
         }
 
+        protected override void OnHandleCreated(EventArgs e)
+        {
+            base.OnHandleCreated(e);
+            RecalculateItemHeight();
+        }
+
         private void RecalculateItemHeight()
         {
             currentScalingFactor = UIUtil.GetInterfaceScalingFactor(this);
             ItemHeight = (int)(BASE_ITEM_HEIGHT * currentScalingFactor);
+            PerformLayout(this, nameof(ItemHeight));
         }
 
         protected override void OnDpiChangedAfterParent(EventArgs e)

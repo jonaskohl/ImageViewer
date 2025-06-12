@@ -58,10 +58,12 @@ namespace JK.ImageViewer.Controls
             get => base.DropDown;
         }
 
+        protected float DpiScalingFactor => Owner is null ? 1f : UIUtil.GetInterfaceScalingFactor(Owner);
+
         public override Size GetPreferredSize(Size constrainingSize)
         {
             var bSize = base.GetPreferredSize(constrainingSize);
-            return new Size(bSize.Width + 24, bSize.Height);
+            return new Size(bSize.Width + (int)(24 * DpiScalingFactor), bSize.Height);
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -70,14 +72,15 @@ namespace JK.ImageViewer.Controls
             using var brush = new SolidBrush(Color);
 
             const int PREVIEW_SIZE = 16;
+            int scaledPreviewSize = (int)(PREVIEW_SIZE * DpiScalingFactor);
 
             var contentRect = ContentRectangle;
 
             var rect = new Rectangle(
-                contentRect.Left + (contentRect.Width - PREVIEW_SIZE) / 2,
-                contentRect.Top + (contentRect.Height - PREVIEW_SIZE) / 2,
-                PREVIEW_SIZE,
-                PREVIEW_SIZE
+                contentRect.Left + (contentRect.Width - scaledPreviewSize) / 2,
+                contentRect.Top + (contentRect.Height - scaledPreviewSize) / 2,
+                scaledPreviewSize,
+                scaledPreviewSize
             );
 
             if (Enabled)

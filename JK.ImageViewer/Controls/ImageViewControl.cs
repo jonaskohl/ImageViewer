@@ -313,14 +313,17 @@ namespace JK.ImageViewer.Controls
             );
 
             var newOffset = new Point(
-                (int)(regionInImageSpace.X * ZoomFactor),
-                (int)(regionInImageSpace.Y * ZoomFactor)
+                (int)(regionInImageSpace.X / ZoomFactor),
+                (int)(regionInImageSpace.Y / ZoomFactor)
             );
 
             ZoomFactor = factor;
             InvalidateFrameCache();
             Application.DoEvents();
+            PerformLayoutCalculation();
+            Application.DoEvents();
             PerformLayout(this, nameof(AutoScrollMinSize));
+            Application.DoEvents();
             AutoScrollPosition = newOffset;
             InvalidateFrameCache();
         }
@@ -391,7 +394,7 @@ namespace JK.ImageViewer.Controls
                     e.Graphics,
                     _imageLoadException.ToString(),
                     Font,
-                    new Rectangle(0, 0, Math.Min(300, ClientSize.Width), ClientSize.Height),
+                    ClientRectangle,
                     Application.IsDarkModeEnabled ? Color.Pink : Color.Red,
                     TextFormatFlags.Left | TextFormatFlags.Top | TextFormatFlags.WordBreak | TextFormatFlags.NoPrefix);
 
@@ -457,8 +460,9 @@ namespace JK.ImageViewer.Controls
         {
             imageCache?.Dispose();
             
-            if (ContentImage is null)
+            if (_contentImage is null)
             {
+                Debug.WriteLine("ForceRecreateImageCache -> Content image is null!");
                 imageCache = null;
                 return;
             }
@@ -471,7 +475,7 @@ namespace JK.ImageViewer.Controls
 
             var prevInterpolationMode = g.InterpolationMode;
             g.InterpolationMode = _zoomFactor < 1 ? _downsampleMode : _upsampleMode;
-            g.DrawImageUnscaled(imageCache!, new Rectangle(
+            g.DrawImage(ContentImage, new Rectangle(
                 0,
                 0,
                 newWidth,
@@ -520,6 +524,31 @@ namespace JK.ImageViewer.Controls
             var prevOffsetMode = g.PixelOffsetMode;
             g.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
+            var displayRect = PerformLayoutCalculation();
+
+            if (_showCheckerboard)
+            {
+                var lightColor = Application.IsDarkModeEnabled ? Color.FromArgb(0x44, 0x44, 0x44) : Color.FromArgb(0xC0, 0xC0, 0xC0);
+                var darkColor = Application.IsDarkModeEnabled ? Color.FromArgb(0x11, 0x11, 0x11) : Color.FromArgb(0x80, 0x80, 0x80);
+                using var checkerBrush = new HatchBrush(HatchStyle.LargeCheckerBoard, lightColor, darkColor);
+                g.FillRectangle(checkerBrush, displayRect);
+            }
+
+            var prevInterpolationMode = g.InterpolationMode;
+            g.InterpolationMode = InterpolationMode.Low;
+            g.DrawImageUnscaled(imageCache!, new Point(
+                (int)displayRect.X,
+                (int)displayRect.Y
+            ));
+            g.InterpolationMode = prevInterpolationMode;
+            g.PixelOffsetMode = prevOffsetMode;
+        }
+
+        private RectangleF PerformLayoutCalculation()
+        {
+            if (ContentImage is null)
+                return RectangleF.Empty;
+
             RectangleF displayRect = RectangleF.Empty;
             for (int i = 0; i < LAYOUT_ITERATIONS; ++i)
             {
@@ -542,22 +571,7 @@ namespace JK.ImageViewer.Controls
                 displayRect = new RectangleF(posX, posY, displayImageWidth, displayImageHeight);
             }
 
-            if (_showCheckerboard)
-            {
-                var lightColor = Application.IsDarkModeEnabled ? Color.FromArgb(0x44, 0x44, 0x44) : Color.FromArgb(0xC0, 0xC0, 0xC0);
-                var darkColor = Application.IsDarkModeEnabled ? Color.FromArgb(0x11, 0x11, 0x11) : Color.FromArgb(0x80, 0x80, 0x80);
-                using var checkerBrush = new HatchBrush(HatchStyle.LargeCheckerBoard, lightColor, darkColor);
-                g.FillRectangle(checkerBrush, displayRect);
-            }
-
-            var prevInterpolationMode = g.InterpolationMode;
-            g.InterpolationMode = InterpolationMode.Low;
-            g.DrawImageUnscaled(imageCache!, new Point(
-                (int)displayRect.X,
-                (int)displayRect.Y
-            ));
-            g.InterpolationMode = prevInterpolationMode;
-            g.PixelOffsetMode = prevOffsetMode;
+            return displayRect;
         }
 
         public float GetBestFitZoomFactor()

@@ -49,12 +49,18 @@ namespace JK.ImageViewer
 
             try
             {
-                if (!ClearImage())
+                if (!ClearImage(true))
                     return;
 
-                using var magickImage = new MagickImage(path);
+                try
+                {
+                    using var magickImage = new MagickImage(path);
 
-                imageViewControl1.ContentImage = magickImage.ToBitmap();
+                    imageViewControl1.ContentImage = magickImage.ToBitmap();
+                } catch (Exception ex)
+                {
+                    imageViewControl1.ImageLoadException = ex;
+                }
 
                 UpdateZoomText();
 
@@ -76,10 +82,6 @@ namespace JK.ImageViewer
 
                 Text = Path.GetFileName(path) + " - " + baseTitle;
                 currentPath = path;
-            }
-            catch (MagickDelegateErrorException ex)
-            {
-                imageViewControl1.ImageLoadException = ex;
             }
             finally
             {

@@ -29,6 +29,7 @@ namespace JK.ImageViewer.Controls
 
         public ColorPicker()
         {
+            AutoScaleMode = AutoScaleMode.Dpi;
             AutoSize = true;
             AutoSizeMode = AutoSizeMode.GrowAndShrink;
             Padding = new Padding(2);
