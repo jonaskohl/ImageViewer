@@ -24,6 +24,7 @@ namespace JK.ImageViewer.Controls
         const int LAYOUT_ITERATIONS = 2;
 
         private Bitmap? frameCache = null;
+        private Bitmap? imageCache = null;
 
         public event EventHandler? ZoomFactorChanged;
         public event EventHandler<Rectangle>? MarqueeSelectionCreated;
@@ -58,6 +59,7 @@ namespace JK.ImageViewer.Controls
             {
                 _zoomFactor = MathUtil.Clamp(Constants.ZOOM_FACTOR_MIN, value, Constants.ZOOM_FACTOR_MAX);
                 ZoomFactorChanged?.Invoke(this, EventArgs.Empty);
+                ForceRecreateImageCache();
                 InvalidateFrameCache();
             }
         }
@@ -83,6 +85,7 @@ namespace JK.ImageViewer.Controls
             {
                 _contentImage = value;
                 UpdateCursor();
+                ForceRecreateImageCache();
                 InvalidateFrameCache();
             }
         }
@@ -109,6 +112,7 @@ namespace JK.ImageViewer.Controls
             set
             {
                 _downsampleMode = value;
+                ForceRecreateImageCache();
                 InvalidateFrameCache();
             }
         }
@@ -122,6 +126,7 @@ namespace JK.ImageViewer.Controls
             set
             {
                 _upsampleMode = value;
+                ForceRecreateImageCache();
                 InvalidateFrameCache();
             }
         }
@@ -448,6 +453,33 @@ namespace JK.ImageViewer.Controls
             Repaint();
         }
 
+        private void ForceRecreateImageCache()
+        {
+            imageCache?.Dispose();
+            
+            if (ContentImage is null)
+            {
+                imageCache = null;
+                return;
+            }
+
+            var newWidth = (int)(ContentImage.Width * ZoomFactor);
+            var newHeight = (int)(ContentImage.Height * ZoomFactor);
+
+            imageCache = new Bitmap(newWidth, newHeight);
+            using var g = Graphics.FromImage(imageCache);
+
+            var prevInterpolationMode = g.InterpolationMode;
+            g.InterpolationMode = _zoomFactor < 1 ? _downsampleMode : _upsampleMode;
+            g.DrawImageUnscaled(imageCache!, new Rectangle(
+                0,
+                0,
+                newWidth,
+                newHeight
+            ));
+            g.InterpolationMode = prevInterpolationMode;
+        }
+
         private void RecreateFrameCache()
         {
             if (ContentImage is null)
@@ -480,6 +512,9 @@ namespace JK.ImageViewer.Controls
                 Debug.WriteLine("Frame cache object created");
             }
 
+            if (imageCache is null)
+                ForceRecreateImageCache();
+
             using var g = Graphics.FromImage(frameCache!);
 
             var prevOffsetMode = g.PixelOffsetMode;
@@ -491,8 +526,8 @@ namespace JK.ImageViewer.Controls
                 var innerWidth = ClientSize.Width;
                 var innerHeight = ClientSize.Height;
 
-                var displayImageWidth = ContentImage.Width * _zoomFactor;
-                var displayImageHeight = ContentImage.Height * _zoomFactor;
+                var displayImageWidth = ContentImage.Width * ZoomFactor;
+                var displayImageHeight = ContentImage.Height * ZoomFactor;
                 var hOverflow = displayImageWidth - innerWidth;
                 var vOverflow = displayImageHeight - innerHeight;
 
@@ -516,8 +551,11 @@ namespace JK.ImageViewer.Controls
             }
 
             var prevInterpolationMode = g.InterpolationMode;
-            g.InterpolationMode = _zoomFactor < 1 ? _downsampleMode : _upsampleMode;
-            g.DrawImage(ContentImage, displayRect);
+            g.InterpolationMode = InterpolationMode.Low;
+            g.DrawImageUnscaled(imageCache!, new Point(
+                (int)displayRect.X,
+                (int)displayRect.Y
+            ));
             g.InterpolationMode = prevInterpolationMode;
             g.PixelOffsetMode = prevOffsetMode;
         }
