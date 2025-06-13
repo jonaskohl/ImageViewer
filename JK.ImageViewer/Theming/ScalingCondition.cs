@@ -12,7 +12,7 @@ namespace JK.ImageViewer.Theming
 
         public override bool Evaluate(Control control)
         {
-            var currentScalingFactor = UIUtil.GetInterfaceScalingFactor(control);
+            var currentScalingFactor = Utils.GetInterfaceScalingFactor(control);
             return currentScalingFactor <= MaxFactor;
         }
     }

@@ -24,9 +24,12 @@ namespace JK.ImageViewer
             Line,
         }
 
+        public SplashScreen? SplashScreen;
+
         string baseTitle;
         string? currentPath;
         bool isUnsaved = false;
+        bool _suspendZoomInputValueChangedEvent = false;
 
         string[]? folderFiles = null;
         int folderIndex = -1;
@@ -118,6 +121,13 @@ namespace JK.ImageViewer
             ClearImage(true);
         }
 
+        protected override void OnShown(EventArgs e)
+        {
+            base.OnShown(e);
+
+            SplashScreen?.ForceClose();
+        }
+
         private void ImageViewControl1_DragEnter(object? sender, DragEventArgs e)
         {
             if (e.Data?.GetDataPresent(DataFormats.FileDrop) ?? false)
@@ -185,12 +195,12 @@ namespace JK.ImageViewer
             if (imageViewControl1.ContentImage is null)
                 return;
 
-            var bmp = new Bitmap(imageViewControl1.ContentImage);
+            using var bmp = imageViewControl1.ContentImage.ToBitmap();
             using var g = Graphics.FromImage(bmp);
             using var pen = new Pen(drawingColor);
             g.DrawLine(pen, line.From, line.To);
 
-            ReplaceCurrentImage(bmp);
+            ReplaceCurrentImage(Utils.GdiToMagick(bmp), null);
             SetUnsaved(true);
         }
 
@@ -199,12 +209,12 @@ namespace JK.ImageViewer
             if (imageViewControl1.ContentImage is null)
                 return;
 
-            var bmp = new Bitmap(imageViewControl1.ContentImage);
+            using var bmp = imageViewControl1.ContentImage.ToBitmap();
             using var g = Graphics.FromImage(bmp);
             using var brush = new SolidBrush(drawingColor);
             g.FillEllipse(brush, rect);
 
-            ReplaceCurrentImage(bmp);
+            ReplaceCurrentImage(Utils.GdiToMagick(bmp), null);
             SetUnsaved(true);
         }
 
@@ -213,12 +223,12 @@ namespace JK.ImageViewer
             if (imageViewControl1.ContentImage is null)
                 return;
 
-            var bmp = new Bitmap(imageViewControl1.ContentImage);
+            using var bmp = imageViewControl1.ContentImage.ToBitmap();
             using var g = Graphics.FromImage(bmp);
             using var brush = new SolidBrush(drawingColor);
             g.FillRectangle(brush, rect);
 
-            ReplaceCurrentImage(bmp);
+            ReplaceCurrentImage(Utils.GdiToMagick(bmp), null);
             SetUnsaved(true);
         }
 
@@ -227,8 +237,7 @@ namespace JK.ImageViewer
             if (imageViewControl1.ContentImage is null)
                 return;
 
-            var magickFactory = new MagickFactory();
-            using var magickImage = (MagickImage)magickFactory.Image.Create((imageViewControl1.ContentImage as Bitmap)!);
+            var magickImage = new MagickImage(imageViewControl1.ContentImage);
             magickImage.Crop(new MagickGeometry(
                 rect.X,
                 rect.Y,
@@ -236,7 +245,7 @@ namespace JK.ImageViewer
                 (uint)rect.Height
             ));
 
-            ReplaceCurrentImage(magickImage.ToBitmap());
+            ReplaceCurrentImage(magickImage, null);
             SetUnsaved(true);
             UpdateZoomText();
         }
@@ -460,7 +469,13 @@ namespace JK.ImageViewer
                                 Value = (decimal)imageViewControl1.ZoomFactor * 100m,
                             };
                             item.NumericUpDown.Suffix = " %";
-                            item.NumericUpDown.ValueChanged += (sender, e) => SetZoomFactor((float)(item.Value / 100m));
+                            item.NumericUpDown.ValueChanged += (sender, e) =>
+                            {
+                                if (_suspendZoomInputValueChangedEvent)
+                                    return;
+                                Debug.WriteLine("ZoomInput.ValueChanged");
+                                SetZoomFactor((float)(item.Value / 100m));
+                            };
                             imageViewControl1.ZoomFactorChanged += (sender, e) => item.Value = (decimal)imageViewControl1.ZoomFactor * 100m;
                             toolStrip1.Items.Add(item);
                             zoomInput = item;

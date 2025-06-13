@@ -76,9 +76,17 @@ namespace JK.ImageViewer.Controls
             }
         }
 
-        private Image? _contentImage = null;
+        private string? _sourcePath = null;
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public Image? ContentImage
+        public string? SourcePath
+        {
+            get => _sourcePath;
+            set => _sourcePath = value;
+        }
+
+        private MagickImage? _contentImage = null;
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public MagickImage? ContentImage
         {
             get => _contentImage;
             set
@@ -458,28 +466,62 @@ namespace JK.ImageViewer.Controls
         {
             imageCache?.Dispose();
             
-            if (_contentImage is null)
+            if (ContentImage is null)
             {
                 Debug.WriteLine("ForceRecreateImageCache -> Content image is null!");
                 imageCache = null;
                 return;
             }
 
-            var newWidth = (int)(ContentImage.Width * ZoomFactor);
-            var newHeight = (int)(ContentImage.Height * ZoomFactor);
+            var newWidth = (uint)(ContentImage.Width * ZoomFactor);
+            var newHeight = (uint)(ContentImage.Height * ZoomFactor);
 
-            imageCache = new Bitmap(newWidth, newHeight);
-            using var g = Graphics.FromImage(imageCache);
+            Debug.WriteLine($"ForceRecreateImageCache -> {newWidth}x{newHeight}");
 
-            var prevInterpolationMode = g.InterpolationMode;
-            g.InterpolationMode = _zoomFactor < 1 ? _downsampleMode : _upsampleMode;
-            g.DrawImage(ContentImage, new Rectangle(
-                0,
-                0,
-                newWidth,
-                newHeight
-            ));
-            g.InterpolationMode = prevInterpolationMode;
+            if (SourcePath is null || !IsVectorFile())
+            {
+                /*
+                Debug.WriteLine("ForceRecreateImageCache -> Using GDI");
+                using var src = ContentImage.ToBitmap();
+                imageCache = new Bitmap((int)newWidth, (int)newHeight);
+                using var g = Graphics.FromImage(imageCache);
+                g.InterpolationMode = ZoomFactor < 1 ? DownsampleMode : UpsampleMode;
+                g.DrawImage(src, 0, 0, (int)newWidth, (int)newHeight);
+                */
+
+                using var resizedImage = new MagickImage(ContentImage);
+                resizedImage.InterpolativeResize(new MagickGeometry()
+                {
+                    Width = newWidth,
+                    Height = newHeight,
+                    IgnoreAspectRatio = true,
+                    Greater = false,
+                    Less = false,
+                }, ZoomFactor < 1 ? PixelInterpolateMethod.Bilinear : PixelInterpolateMethod.Nearest);
+                imageCache = resizedImage.ToBitmap();
+            }
+            else
+            {
+                Debug.WriteLine("ForceRecreateImageCache -> Using Magick.NET");
+                using var resizedImage = new MagickImage();
+                resizedImage.BackgroundColor = MagickColors.Transparent;
+                resizedImage.Read(SourcePath, newWidth, newHeight);
+                imageCache = resizedImage.ToBitmap();
+            }
+        }
+
+        private bool IsVectorFile()
+        {
+            if (SourcePath is null)
+                return false;
+
+            var ext = Path.GetExtension(SourcePath).Substring(1).ToLowerInvariant();
+
+            return ext switch
+            {
+                "svg" => true,
+                _ => false,
+            };
         }
 
         private void RecreateFrameCache()

@@ -10,5 +10,8 @@ namespace JK.ImageViewer
     {
         public const float ZOOM_FACTOR_MIN = 0.125f;
         public const float ZOOM_FACTOR_MAX = 80f;
+
+        public static string LocalStoragePath => Environment.ExpandEnvironmentVariables(@"%localappdata%\Jonas Kohl\ImageViewer");
+        public static string StoragePath => Environment.ExpandEnvironmentVariables(@"%appdata%\Jonas Kohl\ImageViewer");
     }
 }

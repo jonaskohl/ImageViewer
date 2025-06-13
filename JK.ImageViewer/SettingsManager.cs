@@ -31,7 +31,7 @@ namespace JK.ImageViewer
         }
 
         public string PreferencesPath => Path.Combine(
-            Environment.ExpandEnvironmentVariables(@"%appdata%\Jonas Kohl\ImageViewer"),
+            Constants.StoragePath,
             "Preferences.xml"
         );
 

@@ -58,7 +58,7 @@ namespace JK.ImageViewer.Controls
             get => base.DropDown;
         }
 
-        protected float DpiScalingFactor => Owner is null ? 1f : UIUtil.GetInterfaceScalingFactor(Owner);
+        protected float DpiScalingFactor => Owner is null ? 1f : Utils.GetInterfaceScalingFactor(Owner);
 
         public override Size GetPreferredSize(Size constrainingSize)
         {

@@ -54,11 +54,11 @@ namespace JK.ImageViewer
 
                 try
                 {
-                    using var magickImage = new MagickImage();
+                    var magickImage = new MagickImage();
                     magickImage.BackgroundColor = MagickColors.Transparent;
                     magickImage.Read(path);
 
-                    imageViewControl1.ContentImage = magickImage.ToBitmap();
+                    ReplaceCurrentImage(magickImage, path);
 
                     this.folderFiles = folderFiles;
                     if (folderFiles is not null)
@@ -97,11 +97,12 @@ namespace JK.ImageViewer
             }
         }
 
-        private void ReplaceCurrentImage(Image? image)
+        private void ReplaceCurrentImage(MagickImage? image, string? sourcePath)
         {
             imageViewControl1.ImageLoadException = null;
             imageViewControl1.ContentImage?.Dispose();
             imageViewControl1.ContentImage = image;
+            imageViewControl1.SourcePath = sourcePath;
         }
 
         private bool ClearImage(bool clearFolderPosition = false)
@@ -149,7 +150,7 @@ namespace JK.ImageViewer
                 }
             }
 
-            ReplaceCurrentImage(null);
+            ReplaceCurrentImage(null, null);
             Text = baseTitle;
             currentPath = null;
             SetUnsaved(false);
@@ -236,7 +237,9 @@ namespace JK.ImageViewer
         {
             zoomFactor = MathUtil.Clamp(Constants.ZOOM_FACTOR_MIN,  zoomFactor, Constants.ZOOM_FACTOR_MAX);
 
+            _suspendZoomInputValueChangedEvent = true;
             imageViewControl1.ZoomFactor = zoomFactor;
+            _suspendZoomInputValueChangedEvent = false;
         }
 
         private float GetBestFitZoomFactor()

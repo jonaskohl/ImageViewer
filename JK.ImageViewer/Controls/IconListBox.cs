@@ -45,7 +45,7 @@ namespace JK.ImageViewer.Controls
 
         private void RecalculateItemHeight()
         {
-            currentScalingFactor = UIUtil.GetInterfaceScalingFactor(this);
+            currentScalingFactor = Utils.GetInterfaceScalingFactor(this);
             ItemHeight = (int)(BASE_ITEM_HEIGHT * currentScalingFactor);
             PerformLayout(this, nameof(ItemHeight));
         }
